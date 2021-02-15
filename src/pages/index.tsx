@@ -1,7 +1,7 @@
 export default function Index() {
   return (
-    <div>
+    <button>
       bimbus
-    </div>
+    </button>
   );
 }
