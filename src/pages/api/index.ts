@@ -6,7 +6,7 @@ import { respond } from '../../utils/respond';
  * @openapi
  * /:
  *   get:
- *     description: Get basic information about the api
+ *     summary: Get basic information about the api
  *     responses:
  *       200:
  *         description: Successful operation

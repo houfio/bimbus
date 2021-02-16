@@ -1,7 +1,9 @@
+import { Container } from '../components/Container';
+
 export default function Index() {
   return (
-    <button>
+    <Container>
       bimbus
-    </button>
+    </Container>
   );
 }
