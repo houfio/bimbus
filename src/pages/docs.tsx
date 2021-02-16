@@ -1,10 +1,56 @@
+import jsSpec from 'swagger-jsdoc';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
-import spec from '../api.json';
+type Props = {
+  spec: object
+};
 
-export default function App() {
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     response:
+ *       type: object
+ *       properties:
+ *         status:
+ *           type: object
+ *           properties:
+ *             success:
+ *               type: boolean
+ *             error:
+ *               type: string
+ *               nullable: true
+ *   securitySchemes:
+ *     api_key:
+ *       type: apiKey
+ *       name: Authorization
+ *       in: header
+ */
+export default function App({ spec }: Props) {
   return (
     <SwaggerUI spec={spec}/>
   );
+}
+
+export async function getStaticProps() {
+  const spec = jsSpec({
+    definition: {
+      openapi: '3.0.3',
+      info: {
+        title: 'Bimbus',
+        version: '1.0.0'
+      },
+      servers: [
+        {
+          url: '/api'
+        }
+      ]
+    },
+    apis: ['**/pages/**/*.ts?(x)']
+  });
+
+  return {
+    props: { spec }
+  };
 }
