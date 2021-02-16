@@ -1,7 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
+import { respond } from '../../utils/respond';
+
 export default (req: NextApiRequest, res: NextApiResponse) => {
-  res.status(200).json({
+  const body = {
     status: {
       success: true,
       error: null
@@ -9,5 +11,7 @@ export default (req: NextApiRequest, res: NextApiResponse) => {
     data: {
       version: 1
     }
-  });
+  };
+
+  respond('index', body, req, res);
 }
