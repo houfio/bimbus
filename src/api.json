@@ -1,39 +1,84 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.3",
   "info": {
     "title": "Bimbus",
     "version": "1.0.0"
   },
-  "schemes": [
-    "https",
-    "http"
+  "servers": [
+    {
+      "url": "/api"
+    }
   ],
-  "basePath": "/api",
   "paths": {
     "/": {
       "get": {
-        "summary": "Get the api index",
+        "summary": "Get basic information about the api",
         "operationId": "index",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
         "responses": {
-          "default": {
+          "200": {
             "description": "Successful operation",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "version": {
-                  "type": "integer"
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/index"
                 }
               },
-              "xml": {
-                "name": "index"
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/index"
+                }
               }
             }
           }
         }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "response": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "object",
+            "properties": {
+              "success": {
+                "type": "boolean"
+              },
+              "error": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "index": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/response"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "integer"
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    "securitySchemes": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
       }
     }
   }
