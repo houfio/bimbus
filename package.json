@@ -2,8 +2,9 @@
   "name": "bimbus",
   "version": "0.1.0",
   "scripts": {
-    "start": "next dev",
-    "build": "next build"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start -p $PORT"
   },
   "dependencies": {
     "@emotion/react": "^11.1.5",
