@@ -1,5 +1,7 @@
 import { Breakpoint } from './types';
 
+export const xmlContent = 'application/xml';
+
 export const breakpoints: Record<Breakpoint, number> = {
   phone: 0,
   tabletPortrait: 37.5,
