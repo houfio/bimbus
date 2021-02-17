@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
+import { connect } from '../../utils/connect';
 import { respond } from '../../utils/respond';
 
 /**
@@ -26,20 +27,15 @@ import { respond } from '../../utils/respond';
  *           properties:
  *             data:
  *              type: object
+ *              nullable: true
  *              properties:
  *                version:
  *                  type: integer
  */
-export default (req: NextApiRequest, res: NextApiResponse) => {
-  const body = {
-    status: {
-      success: true,
-      error: null
-    },
-    data: {
-      version: 1
-    }
-  };
+export default async (req: NextApiRequest, res: NextApiResponse) => {
+  await connect();
 
-  respond('index', body, req, res);
+  respond(req, res, {
+    version: 1
+  });
 }

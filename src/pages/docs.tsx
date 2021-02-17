@@ -22,10 +22,13 @@ type Props = {
  *               type: string
  *               nullable: true
  *   securitySchemes:
- *     api_key:
- *       type: apiKey
- *       name: Authorization
- *       in: header
+ *     apiKey:
+ *       type: http
+ *       scheme: bearer
+ * tags:
+ *   - name: default
+ *   - name: users
+ *     description: Access to user information
  */
 export default function App({ spec }: Props) {
   return (
