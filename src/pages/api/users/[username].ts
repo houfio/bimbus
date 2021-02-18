@@ -1,8 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { User } from '../../../models/User';
-import { connect } from '../../../utils/connect';
-import { respond } from '../../../utils/respond';
+import { GetUser } from '../../../structs/GetUser';
+import { connect } from '../../../utils/api/connect';
+import { respond } from '../../../utils/api/respond';
+import { validate } from '../../../utils/api/validate';
 
 /**
  * @openapi
@@ -23,6 +25,11 @@ import { respond } from '../../../utils/respond';
  *     responses:
  *       200:
  *         description: Successful operation
+ *       400:
+ *         description: Validation error
+ *       404:
+ *         description: Resource not found
+ *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -51,16 +58,16 @@ import { respond } from '../../../utils/respond';
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   await connect();
 
-  const { username } = req.query;
-
-  if (typeof username !== 'string') {
-    return respond(req, res, undefined, new Error('invalid username type'));
+  if (!validate(req, res, req.query, GetUser)) {
+    return;
   }
 
-  const user = await User.findOne({ username });
+  const user = await User.findOne({
+    username: req.query.username
+  });
 
   if (!user) {
-    return respond(req, res, undefined, new Error('username not found'));
+    return respond(req, res, undefined, new Error('Username not found'), 404);
   }
 
   respond(req, res, {
@@ -69,4 +76,3 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     username: user.username
   });
 }
-

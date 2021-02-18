@@ -1,8 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { User } from '../../../models/User';
-import { connect } from '../../../utils/connect';
-import { respond } from '../../../utils/respond';
+import { connect } from '../../../utils/api/connect';
+import { respond } from '../../../utils/api/respond';
 
 /**
  * @openapi
@@ -16,6 +16,7 @@ import { respond } from '../../../utils/respond';
  *     responses:
  *       200:
  *         description: Successful operation
+ *       default:
  *         content:
  *           application/json:
  *             schema:
