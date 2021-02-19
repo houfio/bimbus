@@ -21,6 +21,9 @@ type Props = {
  *             error:
  *               type: string
  *               nullable: true
+ *             info:
+ *               type: object
+ *               nullable: true
  *   securitySchemes:
  *     apiKey:
  *       type: http

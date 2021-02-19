@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { HttpError } from '../../../exceptions/HttpError';
+import { NotFoundException } from '../../../exceptions/NotFoundException';
 import { User } from '../../../models/User';
 import { GetUser } from '../../../structs/GetUser';
 import { get } from '../../../utils/api/response/get';
@@ -61,7 +61,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const user = await User.findOne({ username });
 
     if (!user) {
-      throw new HttpError('Resource not found', 404);
+      throw new NotFoundException('user', username);
     }
 
     return {

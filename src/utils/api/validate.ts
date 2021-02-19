@@ -1,6 +1,6 @@
 import { assert, Struct } from 'superstruct';
 
-import { HttpError } from '../../exceptions/HttpError';
+import { ValidationError } from '../../exceptions/ValidationError';
 
 export function validate<T>(value: unknown, struct: Struct<T>) {
   try {
@@ -8,6 +8,6 @@ export function validate<T>(value: unknown, struct: Struct<T>) {
 
     return value;
   } catch (e) {
-    throw new HttpError(e.message, 400);
+    throw new ValidationError(e);
   }
 }
