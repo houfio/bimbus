@@ -1,9 +1,7 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-
 import { NotFoundException } from '../../../exceptions/NotFoundException';
 import { User } from '../../../models/User';
 import { GetUser } from '../../../structs/GetUser';
-import { handle } from '../../../utils/api/handle';
+import { api } from '../../../utils/api/api';
 import { validate } from '../../../utils/api/validate';
 
 /**
@@ -94,9 +92,9 @@ import { validate } from '../../../utils/api/validate';
  *         password:
  *           type: string
  */
-export default (req: NextApiRequest, res: NextApiResponse) => handle(req, res, {
-  get: async () => {
-    const { username } = validate(req.query, GetUser);
+export default api({
+  get: async ({ query }) => {
+    const { username } = validate(query, GetUser);
     const user = await User.findOne({ username });
 
     if (!user) {

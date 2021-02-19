@@ -1,8 +1,6 @@
-import { NextApiRequest, NextApiResponse } from 'next';
-
 import { User } from '../../../models/User';
 import { CreateUser } from '../../../structs/CreateUser';
-import { handle } from '../../../utils/api/handle';
+import { api } from '../../../utils/api/api';
 import { validate } from '../../../utils/api/validate';
 
 /**
@@ -77,7 +75,7 @@ import { validate } from '../../../utils/api/validate';
  *         username:
  *           type: string
  */
-export default (req: NextApiRequest, res: NextApiResponse) => handle(req, res, {
+export default api({
   get: async () => {
     const users = await User.find();
 
@@ -91,8 +89,8 @@ export default (req: NextApiRequest, res: NextApiResponse) => handle(req, res, {
       };
     });
   },
-  post: async () => {
-    const { email, password, username } = validate(req.body, CreateUser);
+  post: async ({ body }) => {
+    const { email, password, username } = validate(body, CreateUser);
     const user = await User.create({
       email,
       password,
