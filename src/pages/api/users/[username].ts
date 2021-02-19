@@ -1,7 +1,7 @@
-import { NotFoundError } from '../../../exceptions/NotFoundError';
 import { User } from '../../../models/User';
 import { GetUser } from '../../../structs/GetUser';
 import { api } from '../../../utils/api/api';
+import { exists } from '../../../utils/api/exists';
 import { validate } from '../../../utils/api/validate';
 
 /**
@@ -97,9 +97,7 @@ export default api({
     const { username } = validate(query, GetUser);
     const user = await User.findOne({ username });
 
-    if (!user) {
-      throw new NotFoundError('user', username);
-    }
+    exists(user, 'user', username);
 
     return {
       id: user._id.toString(),
