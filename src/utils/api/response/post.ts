@@ -1,9 +1,8 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { Struct } from 'superstruct';
 
-import { RequestDataHandler } from '../../../types';
+import { RequestHandler } from '../../../types';
 import { method } from '../method';
 
-export function post<T extends Struct<any, any>>(req: NextApiRequest, res: NextApiResponse, struct: T, handler: RequestDataHandler<T>) {
-  return method(req, res, 'POST', req.body, struct, handler);
+export function post(req: NextApiRequest, res: NextApiResponse, handler: RequestHandler) {
+  return method(req, res, 'POST', handler);
 }

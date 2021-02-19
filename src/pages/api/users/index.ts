@@ -1,9 +1,10 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { User } from '../../../models/User';
-import { post } from '../../../utils/api/response/post';
 import { CreateUser } from '../../../structs/CreateUser';
 import { get } from '../../../utils/api/response/get';
+import { post } from '../../../utils/api/response/post';
+import { validate } from '../../../utils/api/validate';
 
 /**
  * @openapi
@@ -82,17 +83,18 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     const users = await User.find();
 
     return users.map((u) => {
-      const { id, email, username } = u.toObject();
+      const { _id, email, username } = u.toObject();
 
       return {
-        id,
+        id: _id.toString(),
         email,
         username
       };
     });
   });
 
-  await post(req, res, CreateUser, async ({ email, password, username }) => {
+  await post(req, res, async () => {
+    const { email, password, username } = validate(req.body, CreateUser);
     const user = await User.create({
       email,
       password,
@@ -100,7 +102,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     });
 
     return {
-      id: user.id,
+      id: user._id.toString(),
       email: user.email,
       username: user.username
     };

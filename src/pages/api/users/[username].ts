@@ -2,10 +2,9 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { HttpError } from '../../../exceptions/HttpError';
 import { User } from '../../../models/User';
-import { CreateUser } from '../../../structs/CreateUser';
 import { GetUser } from '../../../structs/GetUser';
 import { get } from '../../../utils/api/response/get';
-import { post } from '../../../utils/api/response/post';
+import { validate } from '../../../utils/api/validate';
 
 /**
  * @openapi
@@ -57,7 +56,8 @@ import { post } from '../../../utils/api/response/post';
  *                   type: string
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  await get(req, res, GetUser, async ({ username }) => {
+  await get(req, res, async () => {
+    const { username } = validate(req.query, GetUser);
     const user = await User.findOne({ username });
 
     if (!user) {
@@ -65,7 +65,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     }
 
     return {
-      id: user.id,
+      id: user._id.toString(),
       email: user.email,
       username: user.username
     };

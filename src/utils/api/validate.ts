@@ -1,10 +1,12 @@
-import { assert, Infer, Struct } from 'superstruct';
+import { assert, Struct } from 'superstruct';
 
 import { HttpError } from '../../exceptions/HttpError';
 
-export function validate<T extends Struct<any>>(value: any, struct: T): asserts value is Infer<T> {
+export function validate<T>(value: unknown, struct: Struct<T>) {
   try {
     assert(value, struct);
+
+    return value;
   } catch (e) {
     throw new HttpError(e.message, 400);
   }
