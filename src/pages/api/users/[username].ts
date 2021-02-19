@@ -1,4 +1,4 @@
-import { NotFoundException } from '../../../exceptions/NotFoundException';
+import { NotFoundError } from '../../../exceptions/NotFoundError';
 import { User } from '../../../models/User';
 import { GetUser } from '../../../structs/GetUser';
 import { api } from '../../../utils/api/api';
@@ -98,7 +98,7 @@ export default api({
     const user = await User.findOne({ username });
 
     if (!user) {
-      throw new NotFoundException('user', username);
+      throw new NotFoundError('user', username);
     }
 
     return {
