@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { get } from '../../utils/api/response/get';
+import { handle } from '../../utils/api/handle';
 
 /**
  * @openapi
@@ -34,9 +34,9 @@ import { get } from '../../utils/api/response/get';
  *                docs:
  *                  type: string
  */
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  await get(req, res, async () => ({
+export default (req: NextApiRequest, res: NextApiResponse) => handle(req, res, {
+  get: async () => ({
     version: 1,
     docs: `${req.headers.host}/docs`
-  }));
-}
+  })
+});

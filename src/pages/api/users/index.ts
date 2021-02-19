@@ -2,8 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { User } from '../../../models/User';
 import { CreateUser } from '../../../structs/CreateUser';
-import { get } from '../../../utils/api/response/get';
-import { post } from '../../../utils/api/response/post';
+import { handle } from '../../../utils/api/handle';
 import { validate } from '../../../utils/api/validate';
 
 /**
@@ -27,7 +26,7 @@ import { validate } from '../../../utils/api/validate';
  *             schema:
  *               $ref: '#/components/schemas/users'
  *   post:
- *     summary: Create a new user
+ *     summary: Create a user
  *     tags:
  *       - users
  *     requestBody:
@@ -78,8 +77,8 @@ import { validate } from '../../../utils/api/validate';
  *         username:
  *           type: string
  */
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  await get(req, res, async () => {
+export default (req: NextApiRequest, res: NextApiResponse) => handle(req, res, {
+  get: async () => {
     const users = await User.find();
 
     return users.map((u) => {
@@ -91,9 +90,8 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
         username
       };
     });
-  });
-
-  await post(req, res, async () => {
+  },
+  post: async () => {
     const { email, password, username } = validate(req.body, CreateUser);
     const user = await User.create({
       email,
@@ -106,5 +104,5 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
       email: user.email,
       username: user.username
     };
-  });
-}
+  }
+});
