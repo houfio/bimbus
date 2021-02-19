@@ -2,18 +2,24 @@ import { parse } from 'js2xmlparser';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { xmlContent } from '../../constants';
+import { HttpError } from '../../exceptions/HttpError';
 
-export function respond(req: NextApiRequest, res: NextApiResponse, data?: object | object[], err?: Error, status?: number) {
+export function respond(req: NextApiRequest, res: NextApiResponse, data?: object | object[] | Error) {
+  if (!data) {
+    return res.status(204).send('204');
+  }
+
+  const failed = data instanceof Error;
   const body = {
     status: {
-      success: !err,
-      error: err?.message || null
+      success: !failed,
+      error: failed ? (data as Error).message : null
     },
-    data: !data || err ? null : data
+    data: failed ? null : data
   };
 
-  if (err || status) {
-    res.status(status ?? 500);
+  if (failed) {
+    res.status(data instanceof HttpError ? data.code : 500);
   }
 
   if (req.headers.accept !== xmlContent) {

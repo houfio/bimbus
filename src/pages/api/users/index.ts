@@ -1,8 +1,9 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { User } from '../../../models/User';
-import { connect } from '../../../utils/api/connect';
-import { respond } from '../../../utils/api/respond';
+import { post } from '../../../utils/api/response/post';
+import { CreateUser } from '../../../structs/CreateUser';
+import { get } from '../../../utils/api/response/get';
 
 /**
  * @openapi
@@ -24,6 +25,29 @@ import { respond } from '../../../utils/api/respond';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/users'
+ *   post:
+ *     summary: Create a new user
+ *     tags:
+ *       - users
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/createUser'
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *       400:
+ *         description: Validation error
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/user'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/user'
  * components:
  *   schemas:
  *     users:
@@ -43,19 +67,42 @@ import { respond } from '../../../utils/api/respond';
  *                    type: string
  *                  username:
  *                    type: string
+ *     createUser:
+ *       type: object
+ *       properties:
+ *         email:
+ *           type: string
+ *         password:
+ *           type: string
+ *         username:
+ *           type: string
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  await connect();
+  await get(req, res, async () => {
+    const users = await User.find();
 
-  const users = await User.find();
+    return users.map((u) => {
+      const { id, email, username } = u.toObject();
 
-  respond(req, res, users.map((u) => {
-    const { id, email, username } = u.toObject();
+      return {
+        id,
+        email,
+        username
+      };
+    });
+  });
+
+  await post(req, res, CreateUser, async ({ email, password, username }) => {
+    const user = await User.create({
+      email,
+      password,
+      username
+    });
 
     return {
-      id,
-      email,
-      username: username || null
+      id: user.id,
+      email: user.email,
+      username: user.username
     };
-  }));
+  });
 }

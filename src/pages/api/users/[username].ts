@@ -1,16 +1,17 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
+import { HttpError } from '../../../exceptions/HttpError';
 import { User } from '../../../models/User';
+import { CreateUser } from '../../../structs/CreateUser';
 import { GetUser } from '../../../structs/GetUser';
-import { connect } from '../../../utils/api/connect';
-import { respond } from '../../../utils/api/respond';
-import { validate } from '../../../utils/api/validate';
+import { get } from '../../../utils/api/response/get';
+import { post } from '../../../utils/api/response/post';
 
 /**
  * @openapi
  * /users/{username}:
  *   get:
- *     summary: Get a specific user by username
+ *     summary: Get a specific user
  *     tags:
  *       - users
  *     security:
@@ -45,34 +46,28 @@ import { validate } from '../../../utils/api/validate';
  *         - type: object
  *           properties:
  *             data:
- *              type: object
- *              nullable: true
- *              properties:
- *                id:
- *                  type: string
- *                email:
- *                  type: string
- *                username:
- *                  type: string
+ *               type: object
+ *               nullable: true
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 username:
+ *                   type: string
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  await connect();
+  await get(req, res, GetUser, async ({ username }) => {
+    const user = await User.findOne({ username });
 
-  if (!validate(req, res, req.query, GetUser)) {
-    return;
-  }
+    if (!user) {
+      throw new HttpError('Resource not found', 404);
+    }
 
-  const user = await User.findOne({
-    username: req.query.username
-  });
-
-  if (!user) {
-    return respond(req, res, undefined, new Error('Username not found'), 404);
-  }
-
-  respond(req, res, {
-    id: user.id,
-    email: user.email,
-    username: user.username
+    return {
+      id: user.id,
+      email: user.email,
+      username: user.username
+    };
   });
 }

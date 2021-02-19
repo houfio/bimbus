@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { connect } from '../../utils/api/connect';
-import { respond } from '../../utils/api/respond';
+import { get } from '../../utils/api/response/get';
 
 /**
  * @openapi
@@ -32,11 +31,12 @@ import { respond } from '../../utils/api/respond';
  *              properties:
  *                version:
  *                  type: integer
+ *                docs:
+ *                  type: string
  */
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  await connect();
-
-  respond(req, res, {
-    version: 1
-  });
+  await get(req, res, async () => ({
+    version: 1,
+    docs: `${req.headers.host}/docs`
+  }));
 }

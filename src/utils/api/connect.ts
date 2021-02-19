@@ -7,7 +7,8 @@ export function connect() {
 
   return connectDb(process.env.DATABASE_URL!, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
+    useFindAndModify: false,
+    useCreateIndex: true,
+    useUnifiedTopology: true
   });
 }
