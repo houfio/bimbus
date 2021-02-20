@@ -8,8 +8,8 @@ interface User extends Document {
   email: string,
   role: Role,
   lists: {
-    name: string,
     slug: string,
+    name: string,
     language: string,
     public: boolean,
     words: string[]
@@ -38,18 +38,36 @@ const schema = new Schema<User>({
   },
   lists: {
     type: [{
-      name: String,
-      slug: String,
-      language: String,
-      public: Boolean,
+      slug: {
+        type: String,
+        required: true,
+        unique: true
+      },
+      name: {
+        type: String,
+        required: true,
+        unique: true
+      },
+      language: {
+        type: String,
+        required: true
+      },
+      public: {
+        type: Boolean,
+        required: true
+      },
       words: {
-        type: [String],
+        type: [{
+          type: String,
+          unique: true
+        }],
         default: []
       }
     }],
     default: []
   }
 }, {
+  _id: false,
   versionKey: false
 });
 

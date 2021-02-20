@@ -1,4 +1,6 @@
 import { User } from 'models/User';
+import slugify from 'slugify';
+import { CreateList } from 'structs/CreateList';
 import { GetUser } from 'structs/GetUser';
 import { api } from 'utils/api/api';
 import { auth } from 'utils/api/guards/auth';
@@ -12,7 +14,7 @@ import { validate } from 'utils/api/guards/validate';
  * @openapi
  * /users/{username}/lists:
  *   get:
- *     summary: Get all user lists
+ *     summary: Get all lists
  *     tags:
  *       - lists
  *     security:
@@ -43,6 +45,44 @@ import { validate } from 'utils/api/guards/validate';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/lists'
+ *   post:
+ *     summary: Create a list
+ *     tags:
+ *       - lists
+ *     security:
+ *       - apiKey: []
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The username of the user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/createList'
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *       400:
+ *         description: Validation error
+ *       401:
+ *         description: Unauthenticated
+ *       403:
+ *         description: Unauthorized
+ *       404:
+ *         description: Resource not found
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/list'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/list'
  * components:
  *   schemas:
  *     lists:
@@ -56,12 +96,19 @@ import { validate } from 'utils/api/guards/validate';
  *              items:
  *                type: object
  *                properties:
- *                  name:
- *                    type: string
  *                  slug:
  *                    type: string
- *                  public:
- *                    type: boolean
+ *                  name:
+ *                    type: string
+ *     createList:
+ *       type: object
+ *       properties:
+ *         name:
+ *           type: string
+ *         language:
+ *           type: string
+ *         public:
+ *           type: boolean
  */
 export default api({
   get: async ({ headers, query }) => {
@@ -75,9 +122,45 @@ export default api({
     exists(data, 'user', username);
 
     return data.lists.map((l) => ({
-      name: l.name,
       slug: l.slug,
-      public: l.public
+      name: l.name
     }));
+  },
+  post: async ({ headers, query, body }) => {
+    const user = await auth(headers);
+    const { username } = validate(query, GetUser);
+
+    or(() => current(user, username), () => role(user, 'admin'));
+
+    const { name, language, public: p } = validate(body, CreateList);
+    const slug = slugify(name, {
+      replacement: '_',
+      lower: true,
+      strict: true
+    });
+    const data = await User.findOneAndUpdate({ username }, {
+      $push: {
+        lists: {
+          slug,
+          name,
+          language,
+          public: p,
+          words: []
+        }
+      }
+    }, { new: true });
+
+    exists(data, 'user', username);
+
+    const list = data.lists.find((l) => l.slug === slug);
+
+    exists(list, 'list', slug);
+
+    return {
+      slug: list.slug,
+      name: list.name,
+      language: list.language,
+      public: list.public
+    };
   }
 });

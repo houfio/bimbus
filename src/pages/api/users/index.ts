@@ -65,10 +65,10 @@ import { validate } from 'utils/api/guards/validate';
  *              items:
  *                type: object
  *                properties:
- *                  id:
- *                    type: string
  *                  username:
  *                    type: string
+ *                  role:
+ *                    $ref: '#/components/schemas/role'
  *     createUser:
  *       type: object
  *       properties:
@@ -88,11 +88,11 @@ export default api({
     const data = await User.find();
 
     return data.map((u) => {
-      const { _id, username } = u.toObject();
+      const { username, role: r } = u.toObject();
 
       return {
-        id: _id.toString(),
-        username
+        username,
+        role: r
       };
     });
   },
@@ -105,7 +105,6 @@ export default api({
     });
 
     return {
-      id: data._id.toString(),
       username: data.username,
       email: data.email,
       role: data.role

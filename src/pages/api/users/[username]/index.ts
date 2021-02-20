@@ -123,8 +123,6 @@ import { validate } from 'utils/api/guards/validate';
  *               type: object
  *               nullable: true
  *               properties:
- *                 id:
- *                   type: string
  *                 username:
  *                   type: string
  *                 email:
@@ -151,7 +149,6 @@ export default api({
     exists(data, 'user', username);
 
     return {
-      id: data._id.toString(),
       username: data.username,
       email: data.email,
       role: data.role
@@ -171,7 +168,6 @@ export default api({
     exists(data, 'user', username);
 
     return {
-      id: data._id.toString(),
       username: data.username,
       email: data.email,
       role: data.role

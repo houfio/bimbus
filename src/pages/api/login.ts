@@ -67,7 +67,7 @@ export default api({
     }
 
     return {
-      token: sign(data._id.toString(), process.env.SECRET || ''),
+      token: sign(data.username, process.env.SECRET || ''),
       role: data.role
     };
   }

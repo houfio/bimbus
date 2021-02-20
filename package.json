@@ -15,6 +15,7 @@
     "next": "^10.0.6",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "slugify": "^1.4.6",
     "superstruct": "^0.14.2",
     "swagger-jsdoc": "^6.0.6",
     "swagger-ui-react": "^3.43.0",
