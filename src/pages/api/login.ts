@@ -1,11 +1,10 @@
+import { UnauthenticatedError } from 'exceptions/UnauthenticatedError';
 import { sign } from 'jsonwebtoken';
-
-import { UnauthenticatedError } from '../../exceptions/UnauthenticatedError';
-import { User } from '../../models/User';
-import { Authenticate } from '../../structs/Authenticate';
-import { api } from '../../utils/api/api';
-import { exists } from '../../utils/api/guards/exists';
-import { validate } from '../../utils/api/guards/validate';
+import { User } from 'models/User';
+import { Authenticate } from 'structs/Authenticate';
+import { api } from 'utils/api/api';
+import { exists } from 'utils/api/guards/exists';
+import { validate } from 'utils/api/guards/validate';
 
 /**
  * @openapi

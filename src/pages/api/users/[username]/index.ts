@@ -1,13 +1,13 @@
-import { User } from '../../../models/User';
-import { GetUser } from '../../../structs/GetUser';
-import { UpdateUser } from '../../../structs/UpdateUser';
-import { api } from '../../../utils/api/api';
-import { auth } from '../../../utils/api/guards/auth';
-import { current } from '../../../utils/api/guards/current';
-import { exists } from '../../../utils/api/guards/exists';
-import { or } from '../../../utils/api/guards/or';
-import { role } from '../../../utils/api/guards/role';
-import { validate } from '../../../utils/api/guards/validate';
+import { User } from 'models/User';
+import { GetUser } from 'structs/GetUser';
+import { UpdateUser } from 'structs/UpdateUser';
+import { api } from 'utils/api/api';
+import { auth } from 'utils/api/guards/auth';
+import { current } from 'utils/api/guards/current';
+import { exists } from 'utils/api/guards/exists';
+import { or } from 'utils/api/guards/or';
+import { role } from 'utils/api/guards/role';
+import { validate } from 'utils/api/guards/validate';
 
 /**
  * @openapi

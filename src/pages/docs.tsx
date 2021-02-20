@@ -44,7 +44,9 @@ type Props = {
  * tags:
  *   - name: default
  *   - name: users
- *     description: Access to user information
+ *     description: Access to users
+ *   - name: lists
+ *     description: Access to user lists
  */
 export default function App({ spec }: Props) {
   return (
