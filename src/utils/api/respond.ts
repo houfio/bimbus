@@ -23,13 +23,17 @@ export function respond(req: NextApiRequest, res: NextApiResponse, data?: object
 
   if (failed) {
     res.status(error.code);
+
+    for (const [key, value] of Object.entries(error.headers)) {
+      res.setHeader(key, value);
+    }
   }
 
   if (req.headers.accept !== xmlContent) {
     return res.json(body);
   }
 
-  res.setHeader('content-type', xmlContent);
+  res.setHeader('Content-Type', xmlContent);
   res.send(parse('root', body, {
     declaration: {
       encoding: 'utf-8'
