@@ -37,6 +37,21 @@ type Props = {
  *       enum:
  *         - user
  *         - admin
+ *   parameters:
+ *     username:
+ *       in: path
+ *       name: username
+ *       schema:
+ *         type: string
+ *       required: true
+ *       description: The username of the user
+ *     slug:
+ *       in: path
+ *       name: slug
+ *       schema:
+ *         type: string
+ *       required: true
+ *       description: The slug of the list
  *   securitySchemes:
  *     apiKey:
  *       type: http

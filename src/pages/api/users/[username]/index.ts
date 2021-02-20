@@ -12,19 +12,14 @@ import { validate } from 'utils/api/guards/validate';
 /**
  * @openapi
  * /users/{username}:
+ *   parameters:
+ *     - $ref: '#/components/parameters/username'
  *   get:
  *     summary: Get a user
  *     tags:
  *       - users
  *     security:
  *       - apiKey: []
- *     parameters:
- *       - in: path
- *         name: username
- *         schema:
- *           type: string
- *         required: true
- *         description: The username of the user
  *     responses:
  *       200:
  *         description: Successful operation
@@ -50,13 +45,6 @@ import { validate } from 'utils/api/guards/validate';
  *       - users
  *     security:
  *       - apiKey: []
- *     parameters:
- *       - in: path
- *         name: username
- *         schema:
- *           type: string
- *         required: true
- *         description: The username of the user
  *     requestBody:
  *       required: true
  *       content:
@@ -88,13 +76,6 @@ import { validate } from 'utils/api/guards/validate';
  *       - users
  *     security:
  *       - apiKey: []
- *     parameters:
- *       - in: path
- *         name: username
- *         schema:
- *           type: string
- *         required: true
- *         description: The username of the user
  *     responses:
  *       204:
  *         description: Successful operation
