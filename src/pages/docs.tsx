@@ -24,6 +24,14 @@ type Props = {
  *             info:
  *               type: object
  *               nullable: true
+ *     empty:
+ *       allOf:
+ *         - $ref: '#/components/schemas/response'
+ *         - type: object
+ *           properties:
+ *             data:
+ *              type: object
+ *              nullable: true
  *   securitySchemes:
  *     apiKey:
  *       type: http

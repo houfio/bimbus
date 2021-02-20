@@ -70,6 +70,32 @@ import { validate } from '../../../utils/api/validate';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/user'
+ *   delete:
+ *     summary: Delete a user
+ *     tags:
+ *       - users
+ *     security:
+ *       - apiKey: []
+ *     parameters:
+ *       - in: path
+ *         name: username
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The username of the user
+ *     responses:
+ *       204:
+ *         description: Successful operation
+ *       404:
+ *         description: Resource not found
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/empty'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/empty'
  * components:
  *   schemas:
  *     user:
@@ -122,5 +148,13 @@ export default api({
       email: user.email,
       username: user.username
     };
+  },
+  delete: async ({ query }) => {
+    const { username } = validate(query, GetUser);
+    const user = await User.findOneAndDelete({ username });
+
+    exists(user, 'user', username);
+
+    return undefined;
   }
 });
