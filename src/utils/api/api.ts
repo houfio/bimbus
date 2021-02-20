@@ -15,9 +15,9 @@ export function api(handlers: RequestHandlers) {
       return res.status(405).send('405');
     }
 
-    await connect();
-
     try {
+      await connect();
+
       respond(req, res, await handler(req, res));
     } catch (e) {
       respond(req, res, e);

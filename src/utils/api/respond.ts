@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 
 import { xmlContent } from '../../constants';
 import { HttpError } from '../../exceptions/HttpError';
+import { InternalServerError } from '../../exceptions/InternalServerError';
 
 export function respond(req: NextApiRequest, res: NextApiResponse, data?: object | object[] | Error) {
   if (!data) {
@@ -10,17 +11,18 @@ export function respond(req: NextApiRequest, res: NextApiResponse, data?: object
   }
 
   const failed = data instanceof Error;
+  const error = data instanceof HttpError ? data : new InternalServerError();
   const body = {
     status: {
       success: !failed,
-      error: failed ? (data as Error).message : null,
-      info: data instanceof HttpError ? data.info : null
+      error: failed ? error.message : null,
+      info: failed ? error.info : null
     },
     data: failed ? null : data
   };
 
   if (failed) {
-    res.status(data instanceof HttpError ? data.code : 500);
+    res.status(error.code);
   }
 
   if (req.headers.accept !== xmlContent) {
