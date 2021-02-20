@@ -1,7 +1,7 @@
 import { IncomingHttpHeaders } from 'http';
 import { verify } from 'jsonwebtoken';
 
-import { UnauthenticatedError } from '../../../exceptions/UnauthenticatedError';
+import { UnauthenticatedError } from '../../../errors/UnauthenticatedError';
 import { User } from '../../../models/User';
 
 export async function auth(headers: IncomingHttpHeaders) {

@@ -1,4 +1,4 @@
-import { UnauthenticatedError } from 'exceptions/UnauthenticatedError';
+import { UnauthenticatedError } from 'errors/UnauthenticatedError';
 import { sign } from 'jsonwebtoken';
 import { User } from 'models/User';
 import { Authenticate } from 'structs/Authenticate';

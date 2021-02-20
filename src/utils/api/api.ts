@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { MethodError } from '../../exceptions/MethodError';
+import { MethodError } from '../../errors/MethodError';
 import { RequestHandlers } from '../../types';
 
 import { connect } from './connect';

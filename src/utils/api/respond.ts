@@ -2,8 +2,8 @@ import { parse } from 'js2xmlparser';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { xmlContent } from '../../constants';
-import { HttpError } from '../../exceptions/HttpError';
-import { InternalServerError } from '../../exceptions/InternalServerError';
+import { HttpError } from '../../errors/HttpError';
+import { InternalServerError } from '../../errors/InternalServerError';
 
 export function respond(req: NextApiRequest, res: NextApiResponse, data?: object | object[] | Error) {
   if (!data) {

@@ -1,4 +1,4 @@
-import { UnauthorizedError } from '../../../exceptions/UnauthorizedError';
+import { UnauthorizedError } from '../../../errors/UnauthorizedError';
 import { User } from '../../../models/User';
 import { ModelType } from '../../../types';
 
