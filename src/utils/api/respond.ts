@@ -15,7 +15,8 @@ export function respond(req: NextApiRequest, res: NextApiResponse, data?: object
   const body = {
     status: {
       success: !failed,
-      error: failed ? error.message : null,
+      code: failed ? error.code : 200,
+      message: failed ? error.message : null,
       info: failed ? error.info : null
     },
     data: failed ? null : data

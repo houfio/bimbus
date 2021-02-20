@@ -18,7 +18,9 @@ type Props = {
  *           properties:
  *             success:
  *               type: boolean
- *             error:
+ *             code:
+ *               type: integer
+ *             message:
  *               type: string
  *               nullable: true
  *             info:
