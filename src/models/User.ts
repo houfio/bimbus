@@ -1,10 +1,12 @@
 import { Document, Model, model, models, Schema } from 'mongoose';
 
+import { Role } from '../types';
+
 interface User extends Document {
   username: string,
   password: string,
   email: string,
-  role: string,
+  role: Role,
   lists: {
     name: string,
     slug: string,

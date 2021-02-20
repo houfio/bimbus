@@ -1,8 +1,8 @@
 import { UnauthorizedError } from '../../../exceptions/UnauthorizedError';
 import { User } from '../../../models/User';
-import { ModelType } from '../../../types';
+import { ModelType, Role } from '../../../types';
 
-export function role(user: ModelType<typeof User>, r: string) {
+export function role(user: ModelType<typeof User>, r: Role) {
   if (user.role !== r) {
     throw new UnauthorizedError('role', r);
   }
