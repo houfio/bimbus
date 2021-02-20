@@ -32,6 +32,11 @@ type Props = {
  *             data:
  *              type: object
  *              nullable: true
+ *     role:
+ *       type: string
+ *       enum:
+ *         - user
+ *         - admin
  *   securitySchemes:
  *     apiKey:
  *       type: http

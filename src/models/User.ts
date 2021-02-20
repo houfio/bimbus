@@ -1,9 +1,10 @@
 import { Document, Model, model, models, Schema } from 'mongoose';
 
 interface User extends Document {
-  email: string,
-  password: string,
   username: string,
+  password: string,
+  email: string,
+  role: string,
   lists: {
     name: string,
     slug: string,
@@ -14,7 +15,7 @@ interface User extends Document {
 }
 
 const schema = new Schema<User>({
-  email: {
+  username: {
     type: String,
     required: true,
     unique: true
@@ -23,9 +24,15 @@ const schema = new Schema<User>({
     type: String,
     required: true
   },
-  username: {
+  email: {
     type: String,
-    required: true
+    required: true,
+    unique: true
+  },
+  role: {
+    type: String,
+    enum: ['user', 'admin'],
+    default: 'user'
   },
   lists: {
     type: [{

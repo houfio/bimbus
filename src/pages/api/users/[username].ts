@@ -2,8 +2,12 @@ import { User } from '../../../models/User';
 import { GetUser } from '../../../structs/GetUser';
 import { UpdateUser } from '../../../structs/UpdateUser';
 import { api } from '../../../utils/api/api';
-import { exists } from '../../../utils/api/exists';
-import { validate } from '../../../utils/api/validate';
+import { auth } from '../../../utils/api/guards/auth';
+import { current } from '../../../utils/api/guards/current';
+import { exists } from '../../../utils/api/guards/exists';
+import { or } from '../../../utils/api/guards/or';
+import { role } from '../../../utils/api/guards/role';
+import { validate } from '../../../utils/api/guards/validate';
 
 /**
  * @openapi
@@ -26,6 +30,10 @@ import { validate } from '../../../utils/api/validate';
  *         description: Successful operation
  *       400:
  *         description: Validation error
+ *       401:
+ *         description: Unauthenticated
+ *       403:
+ *         description: Unauthorized
  *       404:
  *         description: Resource not found
  *       default:
@@ -60,6 +68,10 @@ import { validate } from '../../../utils/api/validate';
  *         description: Successful operation
  *       400:
  *         description: Validation error
+ *       401:
+ *         description: Unauthenticated
+ *       403:
+ *         description: Unauthorized
  *       404:
  *         description: Resource not found
  *       default:
@@ -86,6 +98,10 @@ import { validate } from '../../../utils/api/validate';
  *     responses:
  *       204:
  *         description: Successful operation
+ *       401:
+ *         description: Unauthenticated
+ *       403:
+ *         description: Unauthorized
  *       404:
  *         description: Resource not found
  *       default:
@@ -109,51 +125,67 @@ import { validate } from '../../../utils/api/validate';
  *               properties:
  *                 id:
  *                   type: string
- *                 email:
- *                   type: string
  *                 username:
  *                   type: string
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   $ref: '#/components/schemas/role'
  *     updateUser:
  *       type: object
  *       properties:
- *         email:
- *           type: string
  *         password:
+ *           type: string
+ *         email:
  *           type: string
  */
 export default api({
-  get: async ({ query }) => {
+  get: async ({ headers, query }) => {
+    const user = await auth(headers);
     const { username } = validate(query, GetUser);
-    const user = await User.findOne({ username });
 
-    exists(user, 'user', username);
+    or(() => current(user, username), () => role(user, 'admin'));
+
+    const data = await User.findOne({ username });
+
+    exists(data, 'user', username);
 
     return {
-      id: user._id.toString(),
-      email: user.email,
-      username: user.username
+      id: data._id.toString(),
+      username: data.username,
+      email: data.email,
+      role: data.role
     };
   },
-  put: async ({ query, body }) => {
+  put: async ({ headers, query, body }) => {
+    const user = await auth(headers);
     const { username } = validate(query, GetUser);
-    const { email, password } = validate(body, UpdateUser);
-    const user = await User.findOneAndUpdate({ username }, {
-      $set: { email, password }
+
+    or(() => current(user, username), () => role(user, 'admin'));
+
+    const { password, email } = validate(body, UpdateUser);
+    const data = await User.findOneAndUpdate({ username }, {
+      $set: { password, email }
     }, { new: true });
 
-    exists(user, 'user', username);
+    exists(data, 'user', username);
 
     return {
-      id: user._id.toString(),
-      email: user.email,
-      username: user.username
+      id: data._id.toString(),
+      username: data.username,
+      email: data.email,
+      role: data.role
     };
   },
-  delete: async ({ query }) => {
+  delete: async ({ headers, query }) => {
+    const user = await auth(headers);
     const { username } = validate(query, GetUser);
-    const user = await User.findOneAndDelete({ username });
 
-    exists(user, 'user', username);
+    or(() => current(user, username), () => role(user, 'admin'));
+
+    const data = await User.findOneAndDelete({ username });
+
+    exists(data, 'user', username);
 
     return undefined;
   }

@@ -1,4 +1,4 @@
-import { NotFoundError } from '../../exceptions/NotFoundError';
+import { NotFoundError } from '../../../exceptions/NotFoundError';
 
 export function exists<T>(value: T | undefined | null, resource: string, id: string): asserts value is T {
   if (!value) {

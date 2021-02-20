@@ -1,7 +1,9 @@
 import { User } from '../../../models/User';
 import { CreateUser } from '../../../structs/CreateUser';
 import { api } from '../../../utils/api/api';
-import { validate } from '../../../utils/api/validate';
+import { auth } from '../../../utils/api/guards/auth';
+import { role } from '../../../utils/api/guards/role';
+import { validate } from '../../../utils/api/guards/validate';
 
 /**
  * @openapi
@@ -15,6 +17,10 @@ import { validate } from '../../../utils/api/validate';
  *     responses:
  *       200:
  *         description: Successful operation
+ *       401:
+ *         description: Unauthenticated
+ *       403:
+ *         description: Unauthorized
  *       default:
  *         content:
  *           application/json:
@@ -61,46 +67,48 @@ import { validate } from '../../../utils/api/validate';
  *                properties:
  *                  id:
  *                    type: string
- *                  email:
- *                    type: string
  *                  username:
  *                    type: string
  *     createUser:
  *       type: object
  *       properties:
- *         email:
+ *         username:
  *           type: string
  *         password:
  *           type: string
- *         username:
+ *         email:
  *           type: string
  */
 export default api({
-  get: async () => {
-    const users = await User.find();
+  get: async ({ headers }) => {
+    const user = await auth(headers);
 
-    return users.map((u) => {
-      const { _id, email, username } = u.toObject();
+    role(user, 'admin');
+
+    const data = await User.find();
+
+    return data.map((u) => {
+      const { _id, username } = u.toObject();
 
       return {
         id: _id.toString(),
-        email,
         username
       };
     });
   },
   post: async ({ body }) => {
-    const { email, password, username } = validate(body, CreateUser);
-    const user = await User.create({
-      email,
+    const { username, password, email } = validate(body, CreateUser);
+    const data = await User.create({
+      username,
       password,
-      username
+      email
     });
 
     return {
-      id: user._id.toString(),
-      email: user.email,
-      username: user.username
+      id: data._id.toString(),
+      username: data.username,
+      email: data.email,
+      role: data.role
     };
   }
 });
