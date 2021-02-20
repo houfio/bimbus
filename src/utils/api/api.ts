@@ -10,6 +10,8 @@ export function api(handlers: RequestHandlers) {
     const handler = handlers[req.method?.toLowerCase() ?? ''];
 
     if (!handler) {
+      res.setHeader('Allow', Object.keys(handlers).join(', ').toUpperCase());
+
       return res.status(405).send('405');
     }
 
