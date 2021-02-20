@@ -2,10 +2,8 @@ import { object } from 'superstruct';
 
 import { Email } from './refinements/Email';
 import { Password } from './refinements/Password';
-import { Username } from './refinements/Username';
 
-export const CreateUser = object({
+export const UpdateUser = object({
   email: Email,
-  password: Password,
-  username: Username
+  password: Password
 });

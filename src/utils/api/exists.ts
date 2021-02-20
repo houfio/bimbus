@@ -5,4 +5,3 @@ export function exists<T>(value: T | undefined | null, resource: string, id: str
     throw new NotFoundError(resource, id);
   }
 }
-

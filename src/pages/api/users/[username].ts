@@ -1,5 +1,6 @@
 import { User } from '../../../models/User';
 import { GetUser } from '../../../structs/GetUser';
+import { UpdateUser } from '../../../structs/UpdateUser';
 import { api } from '../../../utils/api/api';
 import { exists } from '../../../utils/api/exists';
 import { validate } from '../../../utils/api/validate';
@@ -89,6 +90,8 @@ import { validate } from '../../../utils/api/validate';
  *     updateUser:
  *       type: object
  *       properties:
+ *         email:
+ *           type: string
  *         password:
  *           type: string
  */
@@ -96,6 +99,21 @@ export default api({
   get: async ({ query }) => {
     const { username } = validate(query, GetUser);
     const user = await User.findOne({ username });
+
+    exists(user, 'user', username);
+
+    return {
+      id: user._id.toString(),
+      email: user.email,
+      username: user.username
+    };
+  },
+  put: async ({ query, body }) => {
+    const { username } = validate(query, GetUser);
+    const { email, password } = validate(body, UpdateUser);
+    const user = await User.findOneAndUpdate({ username }, {
+      $set: { email, password }
+    }, { new: true });
 
     exists(user, 'user', username);
 
