@@ -160,9 +160,9 @@ export default api({
 
     or(() => current(user, username), () => role(user, 'admin'));
 
-    const data = await User.findOneAndDelete({ username });
+    const result = await User.deleteOne({ username });
 
-    exists(data, 'user', username);
+    exists(result.n, 'user', username);
 
     return undefined;
   }
