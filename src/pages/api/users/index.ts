@@ -107,7 +107,8 @@ export default api(async () => ({}), {
     return {
       username: data.username,
       email: data.email,
-      role: data.role
+      role: data.role,
+      dictionaries: data.dictionaries.length
     };
   }
 });

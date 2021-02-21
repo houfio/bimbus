@@ -1,4 +1,4 @@
-import { Document, Model, model, models, Schema } from 'mongoose';
+import { Document, Model, model, models, ObjectId, Schema } from 'mongoose';
 
 import { Role } from '../types';
 
@@ -7,13 +7,7 @@ interface User extends Document {
   password: string,
   email: string,
   role: Role,
-  lists: {
-    slug: string,
-    name: string,
-    language: string,
-    public: boolean,
-    words: string[]
-  }[]
+  dictionaries: ObjectId[]
 }
 
 const schema = new Schema<User>({
@@ -36,38 +30,15 @@ const schema = new Schema<User>({
     enum: ['user', 'admin'],
     default: 'user'
   },
-  lists: {
+  dictionaries: {
     type: [{
-      slug: {
-        type: String,
-        required: true,
-        unique: true
-      },
-      name: {
-        type: String,
-        required: true,
-        unique: true
-      },
-      language: {
-        type: String,
-        required: true
-      },
-      public: {
-        type: Boolean,
-        required: true
-      },
-      words: {
-        type: [{
-          type: String,
-          unique: true
-        }],
-        default: []
-      }
+      type: Schema.Types.ObjectId,
+      ref: 'Dictionary'
     }],
+    required: true,
     default: []
   }
 }, {
-  _id: false,
   versionKey: false
 });
 

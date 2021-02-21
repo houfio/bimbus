@@ -1,24 +1,21 @@
-import { User } from 'models/User';
+import { getUserData } from 'middleware/getUserData';
+import { Dictionary } from 'models/Dictionary';
 import slugify from 'slugify';
 import { CreateList } from 'structs/CreateList';
 import { GetUser } from 'structs/GetUser';
 import { api } from 'utils/api/api';
 import { auth } from 'utils/api/guards/auth';
-import { current } from 'utils/api/guards/current';
-import { exists } from 'utils/api/guards/exists';
-import { or } from 'utils/api/guards/or';
-import { role } from 'utils/api/guards/role';
 import { validate } from 'utils/api/guards/validate';
 
 /**
  * @openapi
- * /users/{username}/lists:
+ * /users/{username}/dictionaries:
  *   parameters:
  *     - $ref: '#/components/parameters/username'
  *   get:
- *     summary: Get all lists
+ *     summary: Get all dictionaries
  *     tags:
- *       - lists
+ *       - dictionaries
  *     security:
  *       - apiKey: []
  *     responses:
@@ -36,14 +33,14 @@ import { validate } from 'utils/api/guards/validate';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/lists'
+ *               $ref: '#/components/schemas/dictionaries'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/lists'
+ *               $ref: '#/components/schemas/dictionaries'
  *   post:
- *     summary: Create a list
+ *     summary: Create a dictionary
  *     tags:
- *       - lists
+ *       - dictionaries
  *     security:
  *       - apiKey: []
  *     requestBody:
@@ -51,7 +48,7 @@ import { validate } from 'utils/api/guards/validate';
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/createList'
+ *             $ref: '#/components/schemas/createDictionary'
  *     responses:
  *       200:
  *         description: Successful operation
@@ -67,13 +64,13 @@ import { validate } from 'utils/api/guards/validate';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/list'
+ *               $ref: '#/components/schemas/dictionary'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/list'
+ *               $ref: '#/components/schemas/dictionary'
  * components:
  *   schemas:
- *     lists:
+ *     dictionaries:
  *       allOf:
  *         - $ref: '#/components/schemas/response'
  *         - type: object
@@ -88,7 +85,7 @@ import { validate } from 'utils/api/guards/validate';
  *                    type: string
  *                  name:
  *                    type: string
- *     createList:
+ *     createDictionary:
  *       type: object
  *       properties:
  *         name:
@@ -102,50 +99,41 @@ export default api(async ({ headers, query }) => {
   const user = await auth(headers);
   const { username } = validate(query, GetUser);
 
-  or(() => current(user, username), () => role(user, 'admin'));
+  const data = await getUserData(user, username);
 
-  return { username };
+  return { user: data };
 }, {
-  get: async ({ username }) => {
-    const data = await User.findOne({ username });
+  get: async ({ user }) => {
+    const dictionaries = await Dictionary.find({
+      _id: { $in: user.dictionaries }
+    });
 
-    exists(data, 'user', username);
-
-    return data.lists.map((l) => ({
-      slug: l.slug,
-      name: l.name
+    return dictionaries.map((d) => ({
+      slug: d.slug,
+      name: d.name
     }));
   },
-  post: async ({ username }, { body }) => {
+  post: async ({ user }, { body }) => {
     const { name, language, public: p } = validate(body, CreateList);
-    const slug = slugify(name, {
-      replacement: '_',
-      lower: true,
-      strict: true
+    const dictionary = await Dictionary.create({
+      slug: slugify(name, {
+        replacement: '_',
+        lower: true,
+        strict: true
+      }),
+      name,
+      language,
+      public: p
     });
-    const data = await User.findOneAndUpdate({ username }, {
-      $push: {
-        lists: {
-          slug,
-          name,
-          language,
-          public: p,
-          words: []
-        }
-      }
-    }, { new: true });
 
-    exists(data, 'user', username);
-
-    const list = data.lists.find((l) => l.slug === slug);
-
-    exists(list, 'list', slug);
+    user.dictionaries.push(dictionary._id);
+    await user.save();
 
     return {
-      slug: list.slug,
-      name: list.name,
-      language: list.language,
-      public: list.public
+      slug: dictionary.slug,
+      name: dictionary.name,
+      language: dictionary.language,
+      public: dictionary.public
     };
   }
 });

@@ -53,7 +53,7 @@ type Props = {
  *       schema:
  *         type: string
  *       required: true
- *       description: The slug of the list
+ *       description: The slug of the dictionary
  *   securitySchemes:
  *     apiKey:
  *       type: http
@@ -62,8 +62,8 @@ type Props = {
  *   - name: default
  *   - name: users
  *     description: Access to users
- *   - name: lists
- *     description: Access to lists
+ *   - name: dictionaries
+ *     description: Access to dictionaries
  */
 export default function App({ spec }: Props) {
   return (

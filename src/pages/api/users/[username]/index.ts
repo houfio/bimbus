@@ -1,12 +1,8 @@
-import { User } from 'models/User';
+import { getUserData } from 'middleware/getUserData';
 import { GetUser } from 'structs/GetUser';
 import { UpdateUser } from 'structs/UpdateUser';
 import { api } from 'utils/api/api';
 import { auth } from 'utils/api/guards/auth';
-import { current } from 'utils/api/guards/current';
-import { exists } from 'utils/api/guards/exists';
-import { or } from 'utils/api/guards/or';
-import { role } from 'utils/api/guards/role';
 import { validate } from 'utils/api/guards/validate';
 
 /**
@@ -110,6 +106,8 @@ import { validate } from 'utils/api/guards/validate';
  *                   type: string
  *                 role:
  *                   $ref: '#/components/schemas/role'
+ *                 dictionaries:
+ *                   type: integer
  *     updateUser:
  *       type: object
  *       properties:
@@ -122,39 +120,33 @@ export default api(async ({ headers, query }) => {
   const user = await auth(headers);
   const { username } = validate(query, GetUser);
 
-  or(() => current(user, username), () => role(user, 'admin'));
+  const data = await getUserData(user, username);
 
-  return { username };
+  return { user: data };
 }, {
-  get: async ({ username }) => {
-    const data = await User.findOne({ username });
-
-    exists(data, 'user', username);
-
-    return {
-      username: data.username,
-      email: data.email,
-      role: data.role
-    };
-  },
-  put: async ({ username }, { body }) => {
+  get: async ({ user }) => ({
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    dictionaries: user.dictionaries.length
+  }),
+  put: async ({ user }, { body }) => {
     const { password, email } = validate(body, UpdateUser);
-    const data = await User.findOneAndUpdate({ username }, {
-      $set: { password, email }
-    }, { new: true });
 
-    exists(data, 'user', username);
+    user.password = password;
+    user.email = email;
+
+    await user.save();
 
     return {
-      username: data.username,
-      email: data.email,
-      role: data.role
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      dictionaries: user.dictionaries.length
     };
   },
-  delete: async ({ username }) => {
-    const result = await User.deleteOne({ username });
-
-    exists(result.n, 'user', username);
+  delete: async ({ user }) => {
+    await user.delete();
 
     return undefined;
   }

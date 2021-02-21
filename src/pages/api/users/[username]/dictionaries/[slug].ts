@@ -1,23 +1,20 @@
-import { User } from 'models/User';
-import { GetList } from 'structs/GetList';
+import { getDictionaryData } from 'middleware/getDictionaryData';
+import { getUserData } from 'middleware/getUserData';
+import { GetDictionary } from 'structs/GetDictionary';
 import { api } from 'utils/api/api';
 import { auth } from 'utils/api/guards/auth';
-import { current } from 'utils/api/guards/current';
-import { exists } from 'utils/api/guards/exists';
-import { or } from 'utils/api/guards/or';
-import { role } from 'utils/api/guards/role';
 import { validate } from 'utils/api/guards/validate';
 
 /**
  * @openapi
- * /users/{username}/lists/{slug}:
+ * /users/{username}/dictionaries/{slug}:
  *   parameters:
  *     - $ref: '#/components/parameters/username'
  *     - $ref: '#/components/parameters/slug'
  *   get:
- *     summary: Get a list
+ *     summary: Get a dictionary
  *     tags:
- *       - lists
+ *       - dictionaries
  *     security:
  *       - apiKey: []
  *     responses:
@@ -35,14 +32,14 @@ import { validate } from 'utils/api/guards/validate';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/lists'
+ *               $ref: '#/components/schemas/dictionary'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/lists'
+ *               $ref: '#/components/schemas/dictionary'
  *   delete:
- *     summary: Delete a list
+ *     summary: Delete a dictionary
  *     tags:
- *       - lists
+ *       - dictionaries
  *     security:
  *       - apiKey: []
  *     responses:
@@ -64,7 +61,7 @@ import { validate } from 'utils/api/guards/validate';
  *               $ref: '#/components/schemas/empty'
  * components:
  *   schemas:
- *     list:
+ *     dictionary:
  *       allOf:
  *         - $ref: '#/components/schemas/response'
  *         - type: object
@@ -86,35 +83,21 @@ import { validate } from 'utils/api/guards/validate';
  */
 export default api(async ({ headers, query }) => {
   const user = await auth(headers);
-  const { username, slug } = validate(query, GetList);
+  const { username, slug } = validate(query, GetDictionary);
 
-  or(() => current(user, username), () => role(user, 'admin'));
+  const data = await getUserData(user, username);
+  const dictionary = await getDictionaryData(data, slug);
 
-  return { username, slug };
+  return { user: data, dictionary };
 }, {
-  get: async ({ username, slug }) => {
-    const data = await User.findOne({ username });
-
-    exists(data, 'user', username);
-
-    const list = data.lists.find((l) => l.slug === slug);
-
-    exists(list, 'list', slug);
-
-    return {
-      slug: list.slug,
-      name: list.name,
-      language: list.language,
-      public: list.public
-    };
-  },
-  delete: async ({ username, slug }) => {
-    const result = await User.updateOne({ username }, {
-      $pull: { lists: { slug } }
-    });
-
-    exists(result.n, 'user', username);
-    exists(result.nModified, 'list', slug);
+  get: async ({ dictionary }) => ({
+    slug: dictionary.slug,
+    name: dictionary.name,
+    language: dictionary.language,
+    public: dictionary.public
+  }),
+  delete: async ({ dictionary }) => {
+    await dictionary.delete();
 
     return undefined;
   }

@@ -10,7 +10,7 @@ export function api<T extends object>(pre: RequestMiddleware<T>, handlers: Reque
   return async (req: NextApiRequest, res: NextApiResponse) => {
     try {
       const error = new MethodError(Object.keys(handlers));
-      const method = req.method as Method;
+      const method = req.method?.toLowerCase() as Method | undefined;
 
       if (!method) {
         throw error;
