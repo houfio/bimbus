@@ -82,13 +82,13 @@ import { validate } from 'utils/api/guards/validate';
  *                    type: boolean
  */
 export default api(async ({ headers, query }) => {
-  const user = await auth(headers);
+  const currentUser = await auth(headers);
   const { username, slug } = validate(query, GetDictionary);
 
-  const data = await getUserData(user, username);
-  const dictionary = await getDictionaryData(data, slug);
+  const user = await getUserData(currentUser, username);
+  const dictionary = await getDictionaryData(user, slug);
 
-  return { user: data, dictionary };
+  return { user, dictionary };
 }, {
   get: async ({ dictionary }) => ({
     slug: dictionary.slug,

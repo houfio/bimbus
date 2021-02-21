@@ -117,12 +117,12 @@ import { validate } from 'utils/api/guards/validate';
  *           type: string
  */
 export default api(async ({ headers, query }) => {
-  const user = await auth(headers);
+  const currentUser = await auth(headers);
   const { username } = validate(query, GetUser);
 
-  const data = await getUserData(user, username);
+  const user = await getUserData(currentUser, username);
 
-  return { user: data };
+  return { user };
 }, {
   get: async ({ user }) => ({
     username: user.username,
