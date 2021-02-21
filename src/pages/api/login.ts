@@ -1,10 +1,10 @@
 import { UnauthenticatedError } from 'errors/UnauthenticatedError';
+import { exists } from 'guards/exists';
+import { validate } from 'guards/validate';
 import { sign } from 'jsonwebtoken';
 import { User } from 'models/User';
 import { Authenticate } from 'structs/Authenticate';
-import { api } from 'utils/api/api';
-import { exists } from 'utils/api/guards/exists';
-import { validate } from 'utils/api/guards/validate';
+import { resolve } from 'utils/api/resolve';
 
 /**
  * @openapi
@@ -55,8 +55,8 @@ import { validate } from 'utils/api/guards/validate';
  *                role:
  *                  $ref: '#/components/schemas/role'
  */
-export default api(async () => ({}), {
-  post: async ({}, { body }) => {
+export default resolve()({
+  post: async (value, { body }) => {
     const { username, password } = validate(body, Authenticate);
     const data = await User.findOne({ username });
 

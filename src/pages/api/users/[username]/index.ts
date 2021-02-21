@@ -1,9 +1,10 @@
-import { getUserData } from 'middleware/getUserData';
+import { validate } from 'guards/validate';
+import { withAuthentication } from 'middleware/withAuthentication';
+import { withQueryData } from 'middleware/withQueryData';
+import { withUserData } from 'middleware/withUserData';
 import { GetUser } from 'structs/GetUser';
 import { UpdateUser } from 'structs/UpdateUser';
-import { api } from 'utils/api/api';
-import { auth } from 'utils/api/guards/auth';
-import { validate } from 'utils/api/guards/validate';
+import { resolve } from 'utils/api/resolve';
 
 /**
  * @openapi
@@ -116,14 +117,11 @@ import { validate } from 'utils/api/guards/validate';
  *         email:
  *           type: string
  */
-export default api(async ({ headers, query }) => {
-  const currentUser = await auth(headers);
-  const { username } = validate(query, GetUser);
-
-  const user = await getUserData(currentUser, username);
-
-  return { user };
-}, {
+export default resolve(
+  withAuthentication(),
+  withQueryData(GetUser),
+  withUserData()
+)({
   get: async ({ user }) => ({
     username: user.username,
     email: user.email,

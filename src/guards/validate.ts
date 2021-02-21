@@ -1,6 +1,6 @@
 import { assert, Struct } from 'superstruct';
 
-import { ValidationError } from '../../../errors/ValidationError';
+import { ValidationError } from '../errors/ValidationError';
 
 export function validate<T>(value: unknown, struct: Struct<T>) {
   try {

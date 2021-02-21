@@ -1,8 +1,8 @@
 import { IncomingHttpHeaders } from 'http';
 import { verify } from 'jsonwebtoken';
 
-import { UnauthenticatedError } from '../../../errors/UnauthenticatedError';
-import { User } from '../../../models/User';
+import { UnauthenticatedError } from '../errors/UnauthenticatedError';
+import { User } from '../models/User';
 
 export async function auth(headers: IncomingHttpHeaders) {
   let username: string | undefined;
@@ -15,11 +15,11 @@ export async function auth(headers: IncomingHttpHeaders) {
     throw new UnauthenticatedError();
   }
 
-  const found = await User.findOne({ username });
+  const user = await User.findOne({ username });
 
-  if (!found) {
+  if (!user) {
     throw new UnauthenticatedError();
   }
 
-  return found;
+  return user;
 }

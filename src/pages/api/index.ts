@@ -1,4 +1,4 @@
-import { api } from 'utils/api/api';
+import { resolve } from 'utils/api/resolve';
 
 /**
  * @openapi
@@ -32,8 +32,8 @@ import { api } from 'utils/api/api';
  *                docs:
  *                  type: string
  */
-export default api(async () => ({}), {
-  get: async ({}, { headers }) => ({
+export default resolve()({
+  get: async (value, { headers }) => ({
     version: 1,
     docs: `${headers.host}/docs`
   })

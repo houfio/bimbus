@@ -1,9 +1,9 @@
+import { auth } from 'guards/auth';
+import { role } from 'guards/role';
+import { validate } from 'guards/validate';
 import { User } from 'models/User';
 import { CreateUser } from 'structs/CreateUser';
-import { api } from 'utils/api/api';
-import { auth } from 'utils/api/guards/auth';
-import { role } from 'utils/api/guards/role';
-import { validate } from 'utils/api/guards/validate';
+import { resolve } from 'utils/api/resolve';
 
 /**
  * @openapi
@@ -79,8 +79,8 @@ import { validate } from 'utils/api/guards/validate';
  *         email:
  *           type: string
  */
-export default api(async () => ({}), {
-  get: async ({}, { headers }) => {
+export default resolve()({
+  get: async (value, { headers }) => {
     const user = await auth(headers);
 
     role(user, 'admin');
@@ -96,7 +96,7 @@ export default api(async () => ({}), {
       };
     });
   },
-  post: async ({}, { body }) => {
+  post: async (value, { body }) => {
     const { username, password, email } = validate(body, CreateUser);
     const data = await User.create({
       username,

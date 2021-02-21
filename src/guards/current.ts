@@ -1,6 +1,6 @@
-import { UnauthorizedError } from '../../../errors/UnauthorizedError';
-import { User } from '../../../models/User';
-import { ModelType } from '../../../types';
+import { UnauthorizedError } from '../errors/UnauthorizedError';
+import { User } from '../models/User';
+import { ModelType } from '../types';
 
 export function current(user: ModelType<typeof User>, username: string) {
   if (user.username !== username) {

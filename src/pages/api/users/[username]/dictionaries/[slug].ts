@@ -1,9 +1,9 @@
-import { getDictionaryData } from 'middleware/getDictionaryData';
-import { getUserData } from 'middleware/getUserData';
+import { withAuthentication } from 'middleware/withAuthentication';
+import { withDictionaryData } from 'middleware/withDictionaryData';
+import { withQueryData } from 'middleware/withQueryData';
+import { withUserData } from 'middleware/withUserData';
 import { GetDictionary } from 'structs/GetDictionary';
-import { api } from 'utils/api/api';
-import { auth } from 'utils/api/guards/auth';
-import { validate } from 'utils/api/guards/validate';
+import { resolve } from 'utils/api/resolve';
 
 /**
  * @openapi
@@ -81,15 +81,12 @@ import { validate } from 'utils/api/guards/validate';
  *                  public:
  *                    type: boolean
  */
-export default api(async ({ headers, query }) => {
-  const currentUser = await auth(headers);
-  const { username, slug } = validate(query, GetDictionary);
-
-  const user = await getUserData(currentUser, username);
-  const dictionary = await getDictionaryData(user, slug);
-
-  return { user, dictionary };
-}, {
+export default resolve(
+  withAuthentication(),
+  withQueryData(GetDictionary),
+  withUserData(),
+  withDictionaryData()
+)({
   get: async ({ dictionary }) => ({
     slug: dictionary.slug,
     name: dictionary.name,
