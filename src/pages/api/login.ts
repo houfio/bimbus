@@ -55,8 +55,8 @@ import { validate } from 'utils/api/guards/validate';
  *                role:
  *                  $ref: '#/components/schemas/role'
  */
-export default api({
-  post: async ({ body }) => {
+export default api(async () => ({}), {
+  post: async ({}, { body }) => {
     const { username, password } = validate(body, Authenticate);
     const data = await User.findOne({ username });
 

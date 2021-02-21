@@ -32,8 +32,8 @@ import { api } from 'utils/api/api';
  *                docs:
  *                  type: string
  */
-export default api({
-  get: async ({ headers }) => ({
+export default api(async () => ({}), {
+  get: async ({}, { headers }) => ({
     version: 1,
     docs: `${headers.host}/docs`
   })

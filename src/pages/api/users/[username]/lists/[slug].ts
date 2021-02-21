@@ -84,13 +84,15 @@ import { validate } from 'utils/api/guards/validate';
  *                  public:
  *                    type: boolean
  */
-export default api({
-  get: async ({ headers, query }) => {
-    const user = await auth(headers);
-    const { username, slug } = validate(query, GetList);
+export default api(async ({ headers, query }) => {
+  const user = await auth(headers);
+  const { username, slug } = validate(query, GetList);
 
-    or(() => current(user, username), () => role(user, 'admin'));
+  or(() => current(user, username), () => role(user, 'admin'));
 
+  return { username, slug };
+}, {
+  get: async ({ username, slug }) => {
     const data = await User.findOne({ username });
 
     exists(data, 'user', username);
@@ -106,12 +108,7 @@ export default api({
       public: list.public
     };
   },
-  delete: async ({ headers, query }) => {
-    const user = await auth(headers);
-    const { username, slug } = validate(query, GetList);
-
-    or(() => current(user, username), () => role(user, 'admin'));
-
+  delete: async ({ username, slug }) => {
     const result = await User.updateOne({ username }, {
       $pull: { lists: { slug } }
     });

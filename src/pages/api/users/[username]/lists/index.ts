@@ -98,13 +98,15 @@ import { validate } from 'utils/api/guards/validate';
  *         public:
  *           type: boolean
  */
-export default api({
-  get: async ({ headers, query }) => {
-    const user = await auth(headers);
-    const { username } = validate(query, GetUser);
+export default api(async ({ headers, query }) => {
+  const user = await auth(headers);
+  const { username } = validate(query, GetUser);
 
-    or(() => current(user, username), () => role(user, 'admin'));
+  or(() => current(user, username), () => role(user, 'admin'));
 
+  return { username };
+}, {
+  get: async ({ username }) => {
     const data = await User.findOne({ username });
 
     exists(data, 'user', username);
@@ -114,12 +116,7 @@ export default api({
       name: l.name
     }));
   },
-  post: async ({ headers, query, body }) => {
-    const user = await auth(headers);
-    const { username } = validate(query, GetUser);
-
-    or(() => current(user, username), () => role(user, 'admin'));
-
+  post: async ({ username }, { body }) => {
     const { name, language, public: p } = validate(body, CreateList);
     const slug = slugify(name, {
       replacement: '_',

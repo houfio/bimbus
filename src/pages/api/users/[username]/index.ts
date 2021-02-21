@@ -118,13 +118,15 @@ import { validate } from 'utils/api/guards/validate';
  *         email:
  *           type: string
  */
-export default api({
-  get: async ({ headers, query }) => {
-    const user = await auth(headers);
-    const { username } = validate(query, GetUser);
+export default api(async ({ headers, query }) => {
+  const user = await auth(headers);
+  const { username } = validate(query, GetUser);
 
-    or(() => current(user, username), () => role(user, 'admin'));
+  or(() => current(user, username), () => role(user, 'admin'));
 
+  return { username };
+}, {
+  get: async ({ username }) => {
     const data = await User.findOne({ username });
 
     exists(data, 'user', username);
@@ -135,12 +137,7 @@ export default api({
       role: data.role
     };
   },
-  put: async ({ headers, query, body }) => {
-    const user = await auth(headers);
-    const { username } = validate(query, GetUser);
-
-    or(() => current(user, username), () => role(user, 'admin'));
-
+  put: async ({ username }, { body }) => {
     const { password, email } = validate(body, UpdateUser);
     const data = await User.findOneAndUpdate({ username }, {
       $set: { password, email }
@@ -154,12 +151,7 @@ export default api({
       role: data.role
     };
   },
-  delete: async ({ headers, query }) => {
-    const user = await auth(headers);
-    const { username } = validate(query, GetUser);
-
-    or(() => current(user, username), () => role(user, 'admin'));
-
+  delete: async ({ username }) => {
     const result = await User.deleteOne({ username });
 
     exists(result.n, 'user', username);

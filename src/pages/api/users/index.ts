@@ -79,8 +79,8 @@ import { validate } from 'utils/api/guards/validate';
  *         email:
  *           type: string
  */
-export default api({
-  get: async ({ headers }) => {
+export default api(async () => ({}), {
+  get: async ({}, { headers }) => {
     const user = await auth(headers);
 
     role(user, 'admin');
@@ -96,7 +96,7 @@ export default api({
       };
     });
   },
-  post: async ({ body }) => {
+  post: async ({}, { body }) => {
     const { username, password, email } = validate(body, CreateUser);
     const data = await User.create({
       username,
