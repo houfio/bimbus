@@ -1,5 +1,5 @@
-import { MethodError } from '../../errors/MethodError';
-import { Apply, Method, Middleware } from '../../types';
+import { MethodError } from '../errors/MethodError';
+import { Apply, Method, Middleware } from '../types';
 
 import { connect } from './connect';
 import { respond } from './respond';

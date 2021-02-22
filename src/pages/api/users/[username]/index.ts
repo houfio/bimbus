@@ -4,7 +4,7 @@ import { withQueryData } from 'middleware/withQueryData';
 import { withUserData } from 'middleware/withUserData';
 import { GetUser } from 'structs/GetUser';
 import { UpdateUser } from 'structs/UpdateUser';
-import { resolve } from 'utils/api/resolve';
+import { resolve } from 'utils/resolve';
 
 /**
  * @openapi
@@ -20,15 +20,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       400:
- *         description: Validation error
- *       401:
- *         description: Unauthenticated
- *       403:
- *         description: Unauthorized
- *       404:
- *         description: Resource not found
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -36,6 +27,22 @@ import { resolve } from 'utils/api/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/user'
+ *       400:
+ *         $ref: '#/components/responses/400'
+ *       401:
+ *         $ref: '#/components/responses/401'
+ *       403:
+ *         $ref: '#/components/responses/403'
+ *       404:
+ *         $ref: '#/components/responses/404'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
  *   put:
  *     summary: Update a user
  *     tags:
@@ -51,15 +58,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       400:
- *         description: Validation error
- *       401:
- *         description: Unauthenticated
- *       403:
- *         description: Unauthorized
- *       404:
- *         description: Resource not found
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -67,6 +65,22 @@ import { resolve } from 'utils/api/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/user'
+ *       400:
+ *         $ref: '#/components/responses/400'
+ *       401:
+ *         $ref: '#/components/responses/401'
+ *       403:
+ *         $ref: '#/components/responses/403'
+ *       404:
+ *         $ref: '#/components/responses/404'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
  *   delete:
  *     summary: Delete a user
  *     tags:
@@ -74,22 +88,29 @@ import { resolve } from 'utils/api/resolve';
  *     security:
  *       - apiKey: []
  *     responses:
- *       204:
+ *       200:
  *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/user'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/user'
  *       401:
- *         description: Unauthenticated
+ *         $ref: '#/components/responses/401'
  *       403:
- *         description: Unauthorized
+ *         $ref: '#/components/responses/403'
  *       404:
- *         description: Resource not found
+ *         $ref: '#/components/responses/404'
  *       default:
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/empty'
+ *               $ref: '#/components/schemas/error'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/empty'
+ *               $ref: '#/components/schemas/error'
  * components:
  *   schemas:
  *     user:
@@ -99,7 +120,6 @@ import { resolve } from 'utils/api/resolve';
  *           properties:
  *             data:
  *               type: object
- *               nullable: true
  *               properties:
  *                 username:
  *                   type: string

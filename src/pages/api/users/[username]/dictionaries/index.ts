@@ -4,9 +4,9 @@ import { withQueryData } from 'middleware/withQueryData';
 import { withUserData } from 'middleware/withUserData';
 import { Dictionary } from 'models/Dictionary';
 import slugify from 'slugify';
-import { CreateList } from 'structs/CreateList';
+import { CreateDictionary } from 'structs/CreateDictionary';
 import { GetUser } from 'structs/GetUser';
-import { resolve } from 'utils/api/resolve';
+import { resolve } from 'utils/resolve';
 
 /**
  * @openapi
@@ -22,15 +22,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       400:
- *         description: Validation error
- *       401:
- *         description: Unauthenticated
- *       403:
- *         description: Unauthorized
- *       404:
- *         description: Resource not found
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -38,6 +29,22 @@ import { resolve } from 'utils/api/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/dictionaries'
+ *       400:
+ *         $ref: '#/components/responses/400'
+ *       401:
+ *         $ref: '#/components/responses/401'
+ *       403:
+ *         $ref: '#/components/responses/403'
+ *       404:
+ *         $ref: '#/components/responses/404'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
  *   post:
  *     summary: Create a dictionary
  *     tags:
@@ -53,15 +60,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       400:
- *         description: Validation error
- *       401:
- *         description: Unauthenticated
- *       403:
- *         description: Unauthorized
- *       404:
- *         description: Resource not found
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -69,6 +67,22 @@ import { resolve } from 'utils/api/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/dictionary'
+ *       400:
+ *         $ref: '#/components/responses/400'
+ *       401:
+ *         $ref: '#/components/responses/401'
+ *       403:
+ *         $ref: '#/components/responses/403'
+ *       404:
+ *         $ref: '#/components/responses/404'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
  * components:
  *   schemas:
  *     dictionaries:
@@ -78,7 +92,6 @@ import { resolve } from 'utils/api/resolve';
  *           properties:
  *             data:
  *              type: array
- *              nullable: true
  *              items:
  *                type: object
  *                properties:
@@ -112,7 +125,7 @@ export default resolve(
     }));
   },
   post: async ({ user }, { body }) => {
-    const { name, language, public: p } = validate(body, CreateList);
+    const { name, language, public: p } = validate(body, CreateDictionary);
     const dictionary = await Dictionary.create({
       slug: slugify(name, {
         replacement: '_',

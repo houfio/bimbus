@@ -1,4 +1,4 @@
-import { resolve } from 'utils/api/resolve';
+import { resolve } from 'utils/resolve';
 
 /**
  * @openapi
@@ -8,7 +8,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -25,7 +24,6 @@ import { resolve } from 'utils/api/resolve';
  *           properties:
  *             data:
  *              type: object
- *              nullable: true
  *              properties:
  *                version:
  *                  type: integer

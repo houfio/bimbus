@@ -4,7 +4,7 @@ import { validate } from 'guards/validate';
 import { sign } from 'jsonwebtoken';
 import { User } from 'models/User';
 import { Authenticate } from 'structs/Authenticate';
-import { resolve } from 'utils/api/resolve';
+import { resolve } from 'utils/resolve';
 
 /**
  * @openapi
@@ -20,11 +20,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       400:
- *         description: Validation error
- *       401:
- *         description: Unauthenticated
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -32,6 +27,20 @@ import { resolve } from 'utils/api/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/authentication'
+ *       400:
+ *         $ref: '#/components/responses/400'
+ *       401:
+ *         $ref: '#/components/responses/401'
+ *       404:
+ *         $ref: '#/components/responses/404'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
  * components:
  *   schemas:
  *     authenticate:
@@ -48,7 +57,6 @@ import { resolve } from 'utils/api/resolve';
  *           properties:
  *             data:
  *              type: object
- *              nullable: true
  *              properties:
  *                token:
  *                  type: string

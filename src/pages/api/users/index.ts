@@ -3,7 +3,7 @@ import { role } from 'guards/role';
 import { validate } from 'guards/validate';
 import { User } from 'models/User';
 import { CreateUser } from 'structs/CreateUser';
-import { resolve } from 'utils/api/resolve';
+import { resolve } from 'utils/resolve';
 
 /**
  * @openapi
@@ -17,11 +17,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       401:
- *         description: Unauthenticated
- *       403:
- *         description: Unauthorized
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -29,6 +24,18 @@ import { resolve } from 'utils/api/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/users'
+ *       401:
+ *         $ref: '#/components/responses/401'
+ *       403:
+ *         $ref: '#/components/responses/403'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
  *   post:
  *     summary: Create a user
  *     tags:
@@ -42,9 +49,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       400:
- *         description: Validation error
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -52,6 +56,16 @@ import { resolve } from 'utils/api/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/user'
+ *       400:
+ *         $ref: '#/components/responses/400'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
  * components:
  *   schemas:
  *     users:
@@ -61,7 +75,6 @@ import { resolve } from 'utils/api/resolve';
  *           properties:
  *             data:
  *              type: array
- *              nullable: true
  *              items:
  *                type: object
  *                properties:

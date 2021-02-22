@@ -1,6 +1,8 @@
 import { Model } from 'mongoose';
 import { NextApiRequest, NextApiResponse } from 'next';
 
+import { store } from './utils/store';
+
 export type Breakpoint = 'phone' | 'tabletPortrait' | 'tabletLandscape' | 'laptop' | 'desktop';
 export type Breakpoints<T> = Partial<Record<Breakpoint, T>>;
 
@@ -12,3 +14,5 @@ export type RequestHandlers<T extends object> = Partial<Record<Method, RequestHa
 
 export type Role = 'user' | 'admin';
 export type ModelType<T> = T extends Model<infer V> ? V : never;
+
+export type State = ReturnType<typeof store.getState>;

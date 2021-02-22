@@ -3,7 +3,10 @@ import { withDictionaryData } from 'middleware/withDictionaryData';
 import { withQueryData } from 'middleware/withQueryData';
 import { withUserData } from 'middleware/withUserData';
 import { GetDictionary } from 'structs/GetDictionary';
-import { resolve } from 'utils/api/resolve';
+import { resolve } from 'utils/resolve';
+import { validate } from '../../../../../guards/validate';
+import { UpdateUser } from '../../../../../structs/UpdateUser';
+import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
 
 /**
  * @openapi
@@ -20,15 +23,6 @@ import { resolve } from 'utils/api/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *       400:
- *         description: Validation error
- *       401:
- *         description: Unauthenticated
- *       403:
- *         description: Unauthorized
- *       404:
- *         description: Resource not found
- *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -36,6 +30,54 @@ import { resolve } from 'utils/api/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/dictionary'
+ *       400:
+ *         $ref: '#/components/responses/400'
+ *       401:
+ *         $ref: '#/components/responses/401'
+ *       403:
+ *         $ref: '#/components/responses/403'
+ *       404:
+ *         $ref: '#/components/responses/404'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *   put:
+ *     summary: Update a dictionary
+ *     tags:
+ *       - dictionaries
+ *     security:
+ *       - apiKey: []
+ *     responses:
+ *       200:
+ *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/dictionary'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/dictionary'
+ *       400:
+ *         $ref: '#/components/responses/400'
+ *       401:
+ *         $ref: '#/components/responses/401'
+ *       403:
+ *         $ref: '#/components/responses/403'
+ *       404:
+ *         $ref: '#/components/responses/404'
+ *       default:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/error'
  *   delete:
  *     summary: Delete a dictionary
  *     tags:
@@ -43,22 +85,29 @@ import { resolve } from 'utils/api/resolve';
  *     security:
  *       - apiKey: []
  *     responses:
- *       204:
+ *       200:
  *         description: Successful operation
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/dictionary'
+ *           application/xml:
+ *             schema:
+ *               $ref: '#/components/schemas/dictionary'
  *       401:
- *         description: Unauthenticated
+ *         $ref: '#/components/responses/401'
  *       403:
- *         description: Unauthorized
+ *         $ref: '#/components/responses/403'
  *       404:
- *         description: Resource not found
+ *         $ref: '#/components/responses/404'
  *       default:
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/empty'
+ *               $ref: '#/components/schemas/error'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/empty'
+ *               $ref: '#/components/schemas/error'
  * components:
  *   schemas:
  *     dictionary:
@@ -68,7 +117,6 @@ import { resolve } from 'utils/api/resolve';
  *           properties:
  *             data:
  *              type: array
- *              nullable: true
  *              items:
  *                type: object
  *                properties:
@@ -93,6 +141,22 @@ export default resolve(
     language: dictionary.language,
     public: dictionary.public
   }),
+  put: async ({ dictionary }, { body }) => {
+    const { name, language, public: p } = validate(body, UpdateDictionary);
+
+    dictionary.name = name;
+    dictionary.language = language;
+    dictionary.public = p;
+
+    await dictionary.save();
+
+    return {
+      slug: dictionary.slug,
+      name: dictionary.name,
+      language: dictionary.language,
+      public: dictionary.public
+    };
+  },
   delete: async ({ dictionary }) => {
     await dictionary.delete();
 

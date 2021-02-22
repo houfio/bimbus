@@ -1,6 +1,7 @@
-import jsSpec from 'swagger-jsdoc';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
+
+import { generateSpec } from '../utils/generateSpec';
 
 type Props = {
   spec: object
@@ -26,7 +27,7 @@ type Props = {
  *             info:
  *               type: object
  *               nullable: true
- *     empty:
+ *     error:
  *       allOf:
  *         - $ref: '#/components/schemas/response'
  *         - type: object
@@ -54,6 +55,15 @@ type Props = {
  *         type: string
  *       required: true
  *       description: The slug of the dictionary
+ *   responses:
+ *     400:
+ *       description: Validation error
+ *     401:
+ *       description: Unauthenticated
+ *     403:
+ *       description: Unauthorized
+ *     404:
+ *       description: Resource error
  *   securitySchemes:
  *     apiKey:
  *       type: http
@@ -72,23 +82,9 @@ export default function App({ spec }: Props) {
 }
 
 export async function getStaticProps() {
-  const spec = jsSpec({
-    definition: {
-      openapi: '3.0.3',
-      info: {
-        title: 'Bimbus',
-        version: '1.0.0'
-      },
-      servers: [
-        {
-          url: '/api'
-        }
-      ]
-    },
-    apis: ['**/pages/**/*.ts?(x)']
-  });
-
   return {
-    props: { spec }
+    props: {
+      spec: generateSpec()
+    }
   };
 }

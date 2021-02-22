@@ -4,18 +4,22 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start -p $PORT"
+    "start": "next start -p $PORT",
+    "generate": "npx @rtk-incubator/rtk-query-codegen-openapi --file src/services/api.generated.ts --hooks http://localhost:3000/api/spec"
   },
   "dependencies": {
     "@emotion/react": "^11.1.5",
     "@emotion/styled": "^11.1.5",
+    "@reduxjs/toolkit": "^1.5.0",
+    "@rtk-incubator/rtk-query": "^0.2.0",
     "js2xmlparser": "^4.0.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.17",
     "next": "^10.0.6",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
-    "slugify": "^1.4.6",
+    "react-redux": "^7.2.2",
+    "slugify": "^1.4.7",
     "superstruct": "^0.14.2",
     "swagger-jsdoc": "^6.0.6",
     "swagger-ui-react": "^3.43.0",
@@ -23,10 +27,12 @@
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.2.0",
+    "@rtk-incubator/rtk-query-codegen-openapi": "^0.2.4",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^14.14.31",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
+    "@types/react-redux": "^7.1.16",
     "@types/swagger-jsdoc": "^6.0.0",
     "@types/swagger-ui-react": "^3.35.0",
     "@types/validator": "^13.1.3",
