@@ -20,13 +20,6 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/user'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/user'
  *       400:
  *         $ref: '#/components/responses/400'
  *       401:
@@ -39,10 +32,10 @@ import { resolve } from 'utils/resolve';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/user'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/user'
  *   put:
  *     summary: Update a user
  *     tags:
@@ -58,13 +51,6 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/user'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/user'
  *       400:
  *         $ref: '#/components/responses/400'
  *       401:
@@ -77,10 +63,10 @@ import { resolve } from 'utils/resolve';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/user'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/user'
  *   delete:
  *     summary: Delete a user
  *     tags:
@@ -90,13 +76,6 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/user'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/user'
  *       401:
  *         $ref: '#/components/responses/401'
  *       403:
@@ -107,10 +86,10 @@ import { resolve } from 'utils/resolve';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/user'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/user'
  * components:
  *   schemas:
  *     user:
@@ -120,6 +99,7 @@ import { resolve } from 'utils/resolve';
  *           properties:
  *             data:
  *               type: object
+ *               nullable: true
  *               properties:
  *                 username:
  *                   type: string
@@ -129,6 +109,13 @@ import { resolve } from 'utils/resolve';
  *                   $ref: '#/components/schemas/role'
  *                 dictionaries:
  *                   type: integer
+ *               required:
+ *                 - username
+ *                 - email
+ *                 - role
+ *                 - dictionaries
+ *           required:
+ *             - data
  *     updateUser:
  *       type: object
  *       properties:
@@ -136,6 +123,9 @@ import { resolve } from 'utils/resolve';
  *           type: string
  *         email:
  *           type: string
+ *       required:
+ *         - password
+ *         - email
  */
 export default resolve(
   withAuthentication(),

@@ -8,6 +8,7 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
+ *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -23,12 +24,18 @@ import { resolve } from 'utils/resolve';
  *         - type: object
  *           properties:
  *             data:
- *              type: object
- *              properties:
- *                version:
- *                  type: integer
- *                docs:
- *                  type: string
+ *               type: object
+ *               nullable: true
+ *               properties:
+ *                 version:
+ *                   type: integer
+ *                 docs:
+ *                   type: string
+ *               required:
+ *                 - version
+ *                 - docs
+ *           required:
+ *             - data
  */
 export default resolve()({
   get: async (value, { headers }) => ({

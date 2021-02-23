@@ -2,10 +2,11 @@
   "name": "bimbus",
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently --raw npm:dev:*",
     "build": "next build",
     "start": "next start -p $PORT",
-    "generate": "npx @rtk-incubator/rtk-query-codegen-openapi --file src/services/api.generated.ts --hooks http://localhost:3000/api/spec"
+    "dev:start": "next dev",
+    "dev:generate": "nodemon --watch spec.json --exec swagger-typescript-api --path spec.json --output src --name types.api.ts --no-client"
   },
   "dependencies": {
     "@emotion/react": "^11.1.5",
@@ -27,7 +28,6 @@
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.2.0",
-    "@rtk-incubator/rtk-query-codegen-openapi": "^0.2.4",
     "@types/jsonwebtoken": "^8.5.0",
     "@types/node": "^14.14.31",
     "@types/react": "^17.0.2",
@@ -36,6 +36,9 @@
     "@types/swagger-jsdoc": "^6.0.0",
     "@types/swagger-ui-react": "^3.35.0",
     "@types/validator": "^13.1.3",
+    "concurrently": "^6.0.0",
+    "nodemon": "^2.0.7",
+    "swagger-typescript-api": "^5.1.6",
     "tslint": "^6.1.3",
     "tslint-react": "^5.0.0",
     "typescript": "^4.1.5"

@@ -17,13 +17,6 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/users'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/users'
  *       401:
  *         $ref: '#/components/responses/401'
  *       403:
@@ -32,10 +25,10 @@ import { resolve } from 'utils/resolve';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/users'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/users'
  *   post:
  *     summary: Create a user
  *     tags:
@@ -49,6 +42,7 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
+ *       default:
  *         content:
  *           application/json:
  *             schema:
@@ -58,14 +52,6 @@ import { resolve } from 'utils/resolve';
  *               $ref: '#/components/schemas/user'
  *       400:
  *         $ref: '#/components/responses/400'
- *       default:
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/error'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/error'
  * components:
  *   schemas:
  *     users:
@@ -74,14 +60,20 @@ import { resolve } from 'utils/resolve';
  *         - type: object
  *           properties:
  *             data:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  username:
- *                    type: string
- *                  role:
- *                    $ref: '#/components/schemas/role'
+ *               type: array
+ *               nullable: true
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   username:
+ *                     type: string
+ *                   role:
+ *                     $ref: '#/components/schemas/role'
+ *                 required:
+ *                 - username
+ *                 - role
+ *           required:
+ *             - data
  *     createUser:
  *       type: object
  *       properties:
@@ -91,6 +83,10 @@ import { resolve } from 'utils/resolve';
  *           type: string
  *         email:
  *           type: string
+ *       required:
+ *         - username
+ *         - password
+ *         - email
  */
 export default resolve()({
   get: async (value, { headers }) => {

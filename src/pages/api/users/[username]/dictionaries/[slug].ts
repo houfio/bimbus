@@ -1,12 +1,11 @@
+import { validate } from 'guards/validate';
 import { withAuthentication } from 'middleware/withAuthentication';
 import { withDictionaryData } from 'middleware/withDictionaryData';
 import { withQueryData } from 'middleware/withQueryData';
 import { withUserData } from 'middleware/withUserData';
 import { GetDictionary } from 'structs/GetDictionary';
+import { UpdateDictionary } from 'structs/UpdateDictionary';
 import { resolve } from 'utils/resolve';
-import { validate } from '../../../../../guards/validate';
-import { UpdateUser } from '../../../../../structs/UpdateUser';
-import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
 
 /**
  * @openapi
@@ -23,13 +22,6 @@ import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/dictionary'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/dictionary'
  *       400:
  *         $ref: '#/components/responses/400'
  *       401:
@@ -42,10 +34,10 @@ import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionary'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionary'
  *   put:
  *     summary: Update a dictionary
  *     tags:
@@ -55,13 +47,6 @@ import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/dictionary'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/dictionary'
  *       400:
  *         $ref: '#/components/responses/400'
  *       401:
@@ -74,10 +59,10 @@ import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionary'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionary'
  *   delete:
  *     summary: Delete a dictionary
  *     tags:
@@ -87,13 +72,6 @@ import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/dictionary'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/dictionary'
  *       401:
  *         $ref: '#/components/responses/401'
  *       403:
@@ -104,10 +82,10 @@ import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionary'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionary'
  * components:
  *   schemas:
  *     dictionary:
@@ -116,18 +94,26 @@ import { UpdateDictionary } from '../../../../../structs/UpdateDictionary';
  *         - type: object
  *           properties:
  *             data:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  slug:
- *                    type: string
- *                  name:
- *                    type: string
- *                  language:
- *                    type: string
- *                  public:
- *                    type: boolean
+ *               type: array
+ *               nullable: true
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   slug:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                   language:
+ *                     type: string
+ *                   public:
+ *                     type: boolean
+ *                 required:
+ *                   - slug
+ *                   - name
+ *                   - language
+ *                   - public
+ *           required:
+ *             - data
  */
 export default resolve(
   withAuthentication(),

@@ -20,13 +20,6 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/authentication'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/authentication'
  *       400:
  *         $ref: '#/components/responses/400'
  *       401:
@@ -37,10 +30,10 @@ import { resolve } from 'utils/resolve';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/authentication'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/authentication'
  * components:
  *   schemas:
  *     authenticate:
@@ -50,18 +43,27 @@ import { resolve } from 'utils/resolve';
  *           type: string
  *         password:
  *           type: string
+ *       required:
+ *         - username
+ *         - password
  *     authentication:
  *       allOf:
  *         - $ref: '#/components/schemas/response'
  *         - type: object
  *           properties:
  *             data:
- *              type: object
- *              properties:
- *                token:
- *                  type: string
- *                role:
- *                  $ref: '#/components/schemas/role'
+ *               type: object
+ *               nullable: true
+ *               properties:
+ *                 token:
+ *                   type: string
+ *                 role:
+ *                   $ref: '#/components/schemas/role'
+ *               required:
+ *                 - token
+ *                 - role
+ *           required:
+ *             - data
  */
 export default resolve()({
   post: async (value, { body }) => {

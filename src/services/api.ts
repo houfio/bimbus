@@ -1,57 +1,62 @@
-import { api as generatedApi } from './api.generated';
+import { createApi, fetchBaseQuery } from '@rtk-incubator/rtk-query';
 
-export const api = generatedApi.enhanceEndpoints({
-  addEntityTypes: ['User', 'Dictionary'],
-  endpoints: {
-    getUsers: {
-      provides: (response) => [
-        ...response.data!.map((r) => ({ type: 'User' as const, id: r.username })),
-        { type: 'User', id: '*' }
-      ]
-    },
-    postUsers: {
-      invalidates: [{ type: 'User', id: '*' }]
-    },
-    getUsersByUsername: {
-      provides: (response, { username }) => [{ type: 'User', id: username }]
-    },
-    putUsersByUsername: {
-      invalidates: (response, { username }) => [{ type: 'User', id: username }]
-    },
-    deleteUsersByUsername: {
-      invalidates: (response, { username }) => [{ type: 'User', id: username }]
-    },
-    getUsersByUsernameDictionaries: {
-      provides: (response) => [
-        ...response.data!.map((r) => ({ type: 'Dictionary' as const, id: r.slug })),
-        { type: 'Dictionary', id: '*' }
-      ]
-    },
-    postUsersByUsernameDictionaries: {
-      invalidates: [{ type: 'Dictionary', id: '*' }]
-    },
-    getUsersByUsernameDictionariesAndSlug: {
-      provides: (response, { slug }) => [{ type: 'Dictionary', id: slug }]
-    },
-    putUsersByUsernameDictionariesAndSlug: {
-      invalidates: (response, { slug }) => [{ type: 'Dictionary', id: slug }]
-    },
-    deleteUsersByUsernameDictionariesAndSlug: {
-      invalidates: (response, { slug }) => [{ type: 'Dictionary', id: slug }]
+import { ResponseType } from '../types';
+import { CreateUser, UpdateUser, User, Users } from '../types.api';
+
+export const api = createApi({
+  baseQuery: fetchBaseQuery({
+    baseUrl: '/api',
+    prepareHeaders: (headers) => {
+      headers.set('authorization', 'Bearer eyJhbGciOiJIUzI1NiJ9.YWRtaW4.Hq25ihi_FB2DYnhkH9mO7z7nz67xPsE5IfFsUgDhbrU');
+
+      return headers;
     }
-  }
+  }),
+  entityTypes: ['User', 'Users'],
+  endpoints: (builder) => ({
+    getUsers: builder.query<ResponseType<Users>, void>({
+      query: () => '/users',
+      transformResponse: (response: Users) => response.data!,
+      provides: (response) => response.map((r) => ({ type: 'Users' as const, id: r.username }))
+    }),
+    postUsers: builder.mutation<ResponseType<User>, CreateUser>({
+      query: (body) => ({
+        url: '/users',
+        method: 'post',
+        body
+      }),
+      transformResponse: (response: User) => response.data!,
+      invalidates: ['Users']
+    }),
+    getUser: builder.query<ResponseType<User>, { username: string }>({
+      query: ({ username }) => `/users/${username}`,
+      transformResponse: (response: User) => response.data!,
+      provides: (response) => [{ type: 'User', id: response.username }]
+    }),
+    putUser: builder.mutation<ResponseType<User>, UpdateUser & { username: string }>({
+      query: ({ username, ...body }) => ({
+        url: `/users/${username}`,
+        method: 'post',
+        body
+      }),
+      transformResponse: (response: User) => response.data!,
+      invalidates: (response) => [{ type: 'Users', id: response.username }, { type: 'User', id: response.username }]
+    }),
+    deleteUser: builder.mutation<ResponseType<User>, { username: string }>({
+      query: ({ username }) => ({
+        url: `/users/${username}`,
+        method: 'delete'
+      }),
+      transformResponse: (response: User) => response.data!,
+      invalidates: (response) => [{ type: 'Users', id: response.username }, { type: 'User', id: response.username }]
+    })
+  })
 });
 
 export const {
-  usePostLoginMutation: useLogin,
-  useGetUsersQuery: useGetUsers,
-  usePostUsersMutation: useCreateUser,
-  useGetUsersByUsernameQuery: useGetUser,
-  usePutUsersByUsernameMutation: useUpdateUser,
-  useDeleteUsersByUsernameMutation: useDeleteUser,
-  useGetUsersByUsernameDictionariesQuery: useGetDictionaries,
-  usePostUsersByUsernameDictionariesMutation: useCreateDictionary,
-  useGetUsersByUsernameDictionariesAndSlugQuery: useGetDictionary,
-  usePutUsersByUsernameDictionariesAndSlugMutation: useUpdateDictionary,
-  useDeleteUsersByUsernameDictionariesAndSlugMutation: useDeleteDictionary
+  useGetUsersQuery,
+  usePostUsersMutation,
+  useGetUserQuery,
+  usePutUserMutation,
+  useDeleteUserMutation
 } = api;

@@ -5,8 +5,7 @@
   ],
   "linterOptions": {
     "exclude": [
-      "**/*.d.ts",
-      "**/*.generated.ts"
+      "**/*.d.ts"
     ]
   },
   "rules": {

@@ -22,13 +22,6 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/dictionaries'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/dictionaries'
  *       400:
  *         $ref: '#/components/responses/400'
  *       401:
@@ -41,10 +34,10 @@ import { resolve } from 'utils/resolve';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionaries'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionaries'
  *   post:
  *     summary: Create a dictionary
  *     tags:
@@ -60,13 +53,6 @@ import { resolve } from 'utils/resolve';
  *     responses:
  *       200:
  *         description: Successful operation
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/dictionary'
- *           application/xml:
- *             schema:
- *               $ref: '#/components/schemas/dictionary'
  *       400:
  *         $ref: '#/components/responses/400'
  *       401:
@@ -79,10 +65,10 @@ import { resolve } from 'utils/resolve';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionary'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/error'
+ *               $ref: '#/components/schemas/dictionary'
  * components:
  *   schemas:
  *     dictionaries:
@@ -91,14 +77,20 @@ import { resolve } from 'utils/resolve';
  *         - type: object
  *           properties:
  *             data:
- *              type: array
- *              items:
- *                type: object
- *                properties:
- *                  slug:
- *                    type: string
- *                  name:
- *                    type: string
+ *               type: array
+ *               nullable: true
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   slug:
+ *                     type: string
+ *                   name:
+ *                     type: string
+ *                 required:
+ *                   - slug
+ *                   - name
+ *           required:
+ *             - data
  *     createDictionary:
  *       type: object
  *       properties:
@@ -108,6 +100,10 @@ import { resolve } from 'utils/resolve';
  *           type: string
  *         public:
  *           type: boolean
+ *       required:
+ *         - name
+ *         - language
+ *         - public
  */
 export default resolve(
   withAuthentication(),

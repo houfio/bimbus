@@ -1,7 +1,7 @@
+import { writeFile } from 'fs/promises';
+import jsSpec from 'swagger-jsdoc';
 import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
-
-import { generateSpec } from '../utils/generateSpec';
 
 type Props = {
   spec: object
@@ -27,14 +27,13 @@ type Props = {
  *             info:
  *               type: object
  *               nullable: true
- *     error:
- *       allOf:
- *         - $ref: '#/components/schemas/response'
- *         - type: object
- *           properties:
- *             data:
- *              type: object
- *              nullable: true
+ *           required:
+ *             - success
+ *             - code
+ *             - message
+ *             - info
+ *       required:
+ *         - status
  *     role:
  *       type: string
  *       enum:
@@ -82,9 +81,25 @@ export default function App({ spec }: Props) {
 }
 
 export async function getStaticProps() {
+  const spec = jsSpec({
+    definition: {
+      openapi: '3.0.3',
+      info: {
+        title: 'Bimbus',
+        version: '1.0.0'
+      },
+      servers: [
+        {
+          url: '/api'
+        }
+      ]
+    },
+    apis: ['**/pages/**/*.ts?(x)']
+  });
+
+  await writeFile('./spec.json', JSON.stringify(spec, undefined, 2));
+
   return {
-    props: {
-      spec: generateSpec()
-    }
+    props: { spec }
   };
 }
