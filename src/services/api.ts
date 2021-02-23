@@ -1,19 +1,33 @@
 import { createApi, fetchBaseQuery } from '@rtk-incubator/rtk-query';
 
-import { ResponseType } from '../types';
-import { CreateUser, UpdateUser, User, Users } from '../types.api';
+import { ResponseType, State } from '../types';
+import { Authenticate, Authentication, CreateUser, UpdateUser, User, Users } from '../types.api';
 
-export const api = createApi({
+import { selectToken } from './auth';
+
+const api = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: '/api',
-    prepareHeaders: (headers) => {
-      headers.set('authorization', 'Bearer eyJhbGciOiJIUzI1NiJ9.YWRtaW4.Hq25ihi_FB2DYnhkH9mO7z7nz67xPsE5IfFsUgDhbrU');
+    prepareHeaders: (headers, { getState }) => {
+      const token = selectToken(getState() as State);
+
+      if (token) {
+        headers.set('authorization', `Bearer ${token}`);
+      }
 
       return headers;
     }
   }),
   entityTypes: ['User', 'Users'],
   endpoints: (builder) => ({
+    postLogin: builder.mutation<ResponseType<Authentication>, Authenticate>({
+      query: (body) => ({
+        url: '/login',
+        method: 'post',
+        body
+      }),
+      transformResponse: (response: Authentication) => response.data!
+    }),
     getUsers: builder.query<ResponseType<Users>, void>({
       query: () => '/users',
       transformResponse: (response: Users) => response.data!,
@@ -54,9 +68,13 @@ export const api = createApi({
 });
 
 export const {
+  middleware,
+  usePostLoginMutation,
   useGetUsersQuery,
   usePostUsersMutation,
   useGetUserQuery,
   usePutUserMutation,
   useDeleteUserMutation
 } = api;
+
+export default api.reducer;

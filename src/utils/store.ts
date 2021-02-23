@@ -1,13 +1,15 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { setupListeners } from '@rtk-incubator/rtk-query';
 
-import { api } from '../services/api';
+import api, { middleware } from '../services/api';
+import auth from '../services/auth';
 
 export const store = configureStore({
   reducer: {
-    [api.reducerPath]: api.reducer
+    api,
+    auth
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(middleware)
 });
 
 setupListeners(store.dispatch);

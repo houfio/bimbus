@@ -17,3 +17,4 @@ export type ModelType<T> = T extends Model<infer V> ? V : never;
 export type ResponseType<T> = T extends { data: infer V } ? NonNullable<V> : never;
 
 export type State = ReturnType<typeof store.getState>;
+export type Dispatch = typeof store.dispatch;

@@ -1,24 +1,51 @@
+import { superstructResolver } from '@hookform/resolvers/superstruct';
+import { useForm } from 'react-hook-form';
+import { usePostLoginMutation } from 'services/api';
+import { selectToken, setToken } from 'services/auth';
+
 import { Container } from '../components/Container';
-import { useGetUserQuery, useGetUsersQuery } from '../services/api';
+import { useDispatch } from '../hooks/useDispatch';
+import { useSelector } from '../hooks/useSelector';
+import { Authenticate } from '../structs/Authenticate';
 
 export default function Index() {
-  const { data, error } = useGetUsersQuery();
-  const { data: data2 } = useGetUserQuery({ username: 'lex' });
+  const dispatch = useDispatch();
+  const token = useSelector(selectToken);
+  const [mutate] = usePostLoginMutation();
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: superstructResolver(Authenticate)
+  });
 
   return (
     <Container>
-      {data ? data.map((user) => (
-        <div key={user.username}>
-          {user.username} ({user.role})
-        </div>
-      )) : error ? (
+      {token ? (
         <div>
-          Error: {JSON.stringify(error)}
+          Bimbus
         </div>
-      ) : 'Loading'}
-      <div>
-        {JSON.stringify(data2)}
-      </div>
+      ) : (
+        <form
+          onSubmit={handleSubmit(({ username, password }) => mutate({
+            username,
+            password
+          }).unwrap().then((data) => dispatch(setToken(data.token))))}
+        >
+          <div>
+            <input {...register('username')}/>
+            {errors.username && (
+              <span>username not ok</span>
+            )}
+          </div>
+          <div>
+            <input {...register('password')}/>
+            {errors.password && (
+              <span>password not ok</span>
+            )}
+          </div>
+          <button type="submit">
+            submit
+          </button>
+        </form>
+      )}
     </Container>
   );
 }
