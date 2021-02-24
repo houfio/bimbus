@@ -156,6 +156,11 @@ export default resolve(
   delete: async ({ user }) => {
     await user.delete();
 
-    return undefined;
+    return {
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      dictionaries: user.dictionaries.length
+    };
   }
 });

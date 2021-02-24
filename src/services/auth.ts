@@ -8,10 +8,14 @@ const slice = createSlice({
     token: process.browser ? localStorage.getItem('token') || undefined : undefined
   },
   reducers: {
-    setToken: (state, { payload }: PayloadAction<string>) => {
+    setToken: (state, { payload }: PayloadAction<string | undefined>) => {
       state.token = payload;
 
-      localStorage.setItem('token', payload);
+      if (payload) {
+        localStorage.setItem('token', payload);
+      } else {
+        localStorage.removeItem('token');
+      }
     }
   }
 });

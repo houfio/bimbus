@@ -146,6 +146,11 @@ export default resolve(
   delete: async ({ dictionary }) => {
     await dictionary.delete();
 
-    return undefined;
+    return {
+      slug: dictionary.slug,
+      name: dictionary.name,
+      language: dictionary.language,
+      public: dictionary.public
+    };
   }
 });
