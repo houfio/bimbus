@@ -1,4 +1,5 @@
-import { Document, model, Model, models, Schema } from 'mongoose';
+import { Document, model, models, PaginateModel, Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
 interface Dictionary extends Document {
   slug: string,
@@ -36,4 +37,6 @@ const schema = new Schema<Dictionary>({
   versionKey: false
 });
 
-export const Dictionary: Model<Dictionary> = models.Dictionary || model('Dictionary', schema);
+schema.plugin(paginate as any);
+
+export const Dictionary = (models.Dictionary || model('Dictionary', schema)) as PaginateModel<Dictionary>;

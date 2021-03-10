@@ -271,6 +271,12 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/size"
           }
         ]
       },
@@ -668,7 +674,7 @@
       "dictionaries": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/response"
+            "$ref": "#/components/schemas/paginatedResponse"
           },
           {
             "type": "object",
@@ -874,11 +880,15 @@
                   },
                   "total": {
                     "type": "integer"
+                  },
+                  "size": {
+                    "type": "integer"
                   }
                 },
                 "required": [
                   "current",
-                  "total"
+                  "total",
+                  "size"
                 ]
               }
             },
@@ -914,6 +924,22 @@
         },
         "required": true,
         "description": "The slug of the dictionary"
+      },
+      "page": {
+        "in": "query",
+        "name": "page",
+        "schema": {
+          "type": "integer"
+        },
+        "description": "The current page"
+      },
+      "size": {
+        "in": "query",
+        "name": "size",
+        "schema": {
+          "type": "integer"
+        },
+        "description": "The size of a page"
       }
     },
     "responses": {

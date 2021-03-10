@@ -22,7 +22,7 @@ export type Dictionary = Response & {
   data: { slug: string; name: string; language: string; public: boolean }[] | null;
 };
 
-export type Dictionaries = Response & { data: { slug: string; name: string }[] | null };
+export type Dictionaries = PaginatedResponse & { data: { slug: string; name: string }[] | null };
 
 export interface CreateDictionary {
   name: string;
@@ -49,7 +49,7 @@ export interface Response {
   status: { success: boolean; code: number; message: string | null; info: object | null };
 }
 
-export type PaginatedResponse = Response & { page: { current: number; total: number } };
+export type PaginatedResponse = Response & { page: { current: number; total: number; size: number } };
 
 export enum Role {
   User = "user",

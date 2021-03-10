@@ -1,4 +1,5 @@
-import { Document, Model, model, models, ObjectId, Schema } from 'mongoose';
+import { Document, model, models, PaginateModel, Schema } from 'mongoose';
+import paginate from 'mongoose-paginate-v2';
 
 import { Role } from '../types';
 
@@ -7,7 +8,7 @@ interface User extends Document {
   password: string,
   email: string,
   role: Role,
-  dictionaries: ObjectId[]
+  dictionaries: Schema.Types.ObjectId[]
 }
 
 const schema = new Schema<User>({
@@ -42,4 +43,6 @@ const schema = new Schema<User>({
   versionKey: false
 });
 
-export const User: Model<User> = models.User || model('User', schema);
+schema.plugin(paginate as any);
+
+export const User = (models.User || model('User', schema)) as PaginateModel<User>;

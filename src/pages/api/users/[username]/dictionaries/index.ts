@@ -6,6 +6,7 @@ import { Dictionary } from 'models/Dictionary';
 import slugify from 'slugify';
 import { CreateDictionary } from 'structs/CreateDictionary';
 import { DictionaryFilters } from 'structs/filters/DictionaryFilters';
+import { PaginationFilters } from 'structs/filters/PaginationFilters';
 import { GetUser } from 'structs/GetUser';
 import { resolve } from 'utils/resolve';
 
@@ -48,6 +49,8 @@ import { resolve } from 'utils/resolve';
  *         name: language
  *         schema:
  *           type: string
+ *       - $ref: '#/components/parameters/page'
+ *       - $ref: '#/components/parameters/size'
  *   post:
  *     summary: Create a dictionary
  *     tags:
@@ -83,7 +86,7 @@ import { resolve } from 'utils/resolve';
  *   schemas:
  *     dictionaries:
  *       allOf:
- *         - $ref: '#/components/schemas/response'
+ *         - $ref: '#/components/schemas/paginatedResponse'
  *         - type: object
  *           properties:
  *             data:
@@ -119,14 +122,20 @@ export default resolve(
   withAuthentication(),
   withQueryData(GetUser),
   withUserData(),
-  withQueryData(DictionaryFilters, 'filters')
+  withQueryData(DictionaryFilters, 'filters'),
+  withQueryData(PaginationFilters, 'pagination')
 )({
-  get: async ({ user, filters }) => {
-    const dictionaries = await Dictionary.find({
+  get: async ({ user, filters, pagination }) => {
+    const { docs: dictionaries, totalPages } = await Dictionary.paginate({
       _id: { $in: user.dictionaries },
       public: { $eq: filters.public },
       language: { $eq: filters.language?.toLowerCase() }
+    }, {
+      page: pagination.page + 1,
+      limit: pagination.size
     });
+
+    console.log(pagination.page, pagination.size, totalPages);
 
     return dictionaries.map((d) => ({
       slug: d.slug,

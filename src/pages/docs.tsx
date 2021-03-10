@@ -46,9 +46,12 @@ type Props = {
  *                   type: integer
  *                 total:
  *                   type: integer
+ *                 size:
+ *                   type: integer
  *               required:
  *                 - current
  *                 - total
+ *                 - size
  *           required:
  *             - page
  *     role:
@@ -71,6 +74,18 @@ type Props = {
  *         type: string
  *       required: true
  *       description: The slug of the dictionary
+ *     page:
+ *       in: query
+ *       name: page
+ *       schema:
+ *         type: integer
+ *       description: The current page
+ *     size:
+ *       in: query
+ *       name: size
+ *       schema:
+ *         type: integer
+ *       description: The size of a page
  *   responses:
  *     400:
  *       description: Validation error
