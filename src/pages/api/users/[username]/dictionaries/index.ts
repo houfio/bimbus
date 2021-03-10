@@ -8,6 +8,7 @@ import { CreateDictionary } from 'structs/CreateDictionary';
 import { DictionaryFilters } from 'structs/filters/DictionaryFilters';
 import { PaginationFilters } from 'structs/filters/PaginationFilters';
 import { GetUser } from 'structs/GetUser';
+import { paginated } from 'utils/paginated';
 import { resolve } from 'utils/resolve';
 
 /**
@@ -126,7 +127,7 @@ export default resolve(
   withQueryData(PaginationFilters, 'pagination')
 )({
   get: async ({ user, filters, pagination }) => {
-    const { docs: dictionaries, totalPages } = await Dictionary.paginate({
+    const data = await Dictionary.paginate({
       _id: { $in: user.dictionaries },
       public: { $eq: filters.public },
       language: { $eq: filters.language?.toLowerCase() }
@@ -135,11 +136,9 @@ export default resolve(
       limit: pagination.size
     });
 
-    console.log(pagination.page, pagination.size, totalPages);
-
-    return dictionaries.map((d) => ({
-      slug: d.slug,
-      name: d.name
+    return paginated(data, (dictionary) => ({
+      slug: dictionary.slug,
+      name: dictionary.name
     }));
   },
   post: async ({ user }, { body }) => {

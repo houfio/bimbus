@@ -12,6 +12,7 @@ export function respond(req: NextApiRequest, res: NextApiResponse, data?: object
 
   const failed = data instanceof Error;
   const error = data instanceof HttpError ? data : new InternalServerError();
+  const { data: inner, ...rest } = data as any;
   const body = {
     status: {
       success: !failed,
@@ -19,7 +20,8 @@ export function respond(req: NextApiRequest, res: NextApiResponse, data?: object
       message: failed ? error.message : null,
       info: failed ? error.info : null
     },
-    data: failed ? null : data
+    ...!failed && inner ? rest : {},
+    data: failed ? null : inner ?? data
   };
 
   if (failed) {
