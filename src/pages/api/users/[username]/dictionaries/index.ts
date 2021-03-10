@@ -5,6 +5,7 @@ import { withUserData } from 'middleware/withUserData';
 import { Dictionary } from 'models/Dictionary';
 import slugify from 'slugify';
 import { CreateDictionary } from 'structs/CreateDictionary';
+import { DictionaryFilters } from 'structs/filters/DictionaryFilters';
 import { GetUser } from 'structs/GetUser';
 import { resolve } from 'utils/resolve';
 
@@ -38,6 +39,15 @@ import { resolve } from 'utils/resolve';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/dictionaries'
+ *     parameters:
+ *       - in: query
+ *         name: public
+ *         schema:
+ *           type: boolean
+ *       - in: query
+ *         name: language
+ *         schema:
+ *           type: string
  *   post:
  *     summary: Create a dictionary
  *     tags:
@@ -108,11 +118,14 @@ import { resolve } from 'utils/resolve';
 export default resolve(
   withAuthentication(),
   withQueryData(GetUser),
-  withUserData()
+  withUserData(),
+  withQueryData(DictionaryFilters, 'filters')
 )({
-  get: async ({ user }) => {
+  get: async ({ user, filters }) => {
     const dictionaries = await Dictionary.find({
-      _id: { $in: user.dictionaries }
+      _id: { $in: user.dictionaries },
+      public: { $eq: filters.public },
+      language: { $eq: filters.language?.toLowerCase() }
     });
 
     return dictionaries.map((d) => ({

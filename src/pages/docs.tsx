@@ -34,6 +34,23 @@ type Props = {
  *             - info
  *       required:
  *         - status
+ *     paginatedResponse:
+ *       allOf:
+ *         - $ref: '#/components/schemas/response'
+ *         - type: object
+ *           properties:
+ *             page:
+ *               type: object
+ *               properties:
+ *                 current:
+ *                   type: integer
+ *                 total:
+ *                   type: integer
+ *               required:
+ *                 - current
+ *                 - total
+ *           required:
+ *             - page
  *     role:
  *       type: string
  *       enum:

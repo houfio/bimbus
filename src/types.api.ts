@@ -49,6 +49,8 @@ export interface Response {
   status: { success: boolean; code: number; message: string | null; info: object | null };
 }
 
+export type PaginatedResponse = Response & { page: { current: number; total: number } };
+
 export enum Role {
   User = "user",
   Admin = "admin",

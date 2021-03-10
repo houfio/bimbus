@@ -256,7 +256,23 @@
               }
             }
           }
-        }
+        },
+        "parameters": [
+          {
+            "in": "query",
+            "name": "public",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "language",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ]
       },
       "post": {
         "summary": "Create a dictionary",
@@ -840,6 +856,36 @@
         },
         "required": [
           "status"
+        ]
+      },
+      "paginatedResponse": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/response"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "page": {
+                "type": "object",
+                "properties": {
+                  "current": {
+                    "type": "integer"
+                  },
+                  "total": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "current",
+                  "total"
+                ]
+              }
+            },
+            "required": [
+              "page"
+            ]
+          }
         ]
       },
       "role": {
