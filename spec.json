@@ -333,6 +333,115 @@
         }
       }
     },
+    "/users/{username}/games": {
+      "parameters": [
+        {
+          "$ref": "#/components/parameters/username"
+        }
+      ],
+      "get": {
+        "summary": "Get all dictionaries",
+        "tags": [
+          "games"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/games"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/games"
+                }
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/page"
+          },
+          {
+            "$ref": "#/components/parameters/size"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create a game",
+        "tags": [
+          "games"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/createGame"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful operation"
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "401": {
+            "$ref": "#/components/responses/401"
+          },
+          "403": {
+            "$ref": "#/components/responses/403"
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "default": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/game"
+                }
+              },
+              "application/xml": {
+                "schema": {
+                  "$ref": "#/components/schemas/game"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/users/{username}": {
       "parameters": [
         {
@@ -724,6 +833,61 @@
           "public"
         ]
       },
+      "games": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/paginatedResponse"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "data": {
+                "type": "array",
+                "nullable": true,
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "dictionary": {
+                      "type": "string"
+                    },
+                    "hostId": {
+                      "type": "string"
+                    },
+                    "opponentId": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "dictionary",
+                    "host",
+                    "opponent"
+                  ]
+                }
+              }
+            },
+            "required": [
+              "dictionary",
+              "host",
+              "opponent"
+            ]
+          }
+        ]
+      },
+      "createGame": {
+        "type": "object",
+        "properties": {
+          "dictionary": {
+            "type": "string"
+          },
+          "opponent": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "dictionary",
+          "opponent"
+        ]
+      },
       "user": {
         "allOf": [
           {
@@ -974,6 +1138,10 @@
     {
       "name": "dictionaries",
       "description": "Access to dictionaries"
+    },
+    {
+      "name": "games",
+      "description": "Access to games"
     }
   ]
 }

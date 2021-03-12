@@ -30,6 +30,15 @@ export interface CreateDictionary {
   public: boolean;
 }
 
+export type Games = PaginatedResponse & {
+  data?: { dictionary: string; hostId?: string; opponentId?: string }[] | null;
+};
+
+export interface CreateGame {
+  dictionary: string;
+  opponent: string;
+}
+
 export type User = Response & { data: { username: string; email: string; role: Role; dictionaries: number } };
 
 export interface UpdateUser {

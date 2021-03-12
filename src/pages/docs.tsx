@@ -105,6 +105,8 @@ type Props = {
  *     description: Access to users
  *   - name: dictionaries
  *     description: Access to dictionaries
+ *   - name: games
+ *     description: Access to games
  */
 export default function App({ spec }: Props) {
   return (
