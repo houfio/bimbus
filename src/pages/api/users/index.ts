@@ -110,7 +110,8 @@ export default resolve()({
     const data = await User.create({
       username,
       password,
-      email
+      email,
+      role: username === 'admin' ? username : undefined
     });
 
     return {
