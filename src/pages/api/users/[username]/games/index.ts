@@ -1,14 +1,13 @@
-import {validate} from 'guards/validate';
-import {withAuthentication} from 'middleware/withAuthentication';
-import {withQueryData} from 'middleware/withQueryData';
-import {withUserData} from 'middleware/withUserData';
-import {Game} from 'models/Game';
-import {CreateGame} from 'structs/CreateGame';
-import {PaginationFilters} from 'structs/filters/PaginationFilters';
-import {GetUser} from 'structs/GetUser';
-import {paginated} from 'utils/paginated';
-import {resolve} from 'utils/resolve';
-
+import { validate } from 'guards/validate';
+import { withAuthentication } from 'middleware/withAuthentication';
+import { withQueryData } from 'middleware/withQueryData';
+import { withUserData } from 'middleware/withUserData';
+import { Game } from 'models/Game';
+import { CreateGame } from 'structs/CreateGame';
+import { PaginationFilters } from 'structs/filters/PaginationFilters';
+import { GetUser } from 'structs/GetUser';
+import { paginated } from 'utils/paginated';
+import { resolve } from 'utils/resolve';
 
 /**
  * @openapi
@@ -145,6 +144,6 @@ export default resolve(
       dictionary: game.dictionary,
       host: game.host.user,
       opponent: game.opponent.user
-    }
+    };
   }
 });

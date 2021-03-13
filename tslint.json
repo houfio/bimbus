@@ -10,6 +10,7 @@
   },
   "rules": {
     "arrow-parens": true,
+    "ban-types": false,
     "curly": true,
     "eofline": true,
     "jsx-alignment": true,

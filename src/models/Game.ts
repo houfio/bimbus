@@ -1,7 +1,5 @@
-import {Document, model, models, PaginateModel, Schema} from 'mongoose';
+import { Document, model, models, PaginateModel, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
-
-import {Role} from '../types';
 
 interface Game extends Document {
   dictionary: Schema.Types.ObjectId,

@@ -1,6 +1,4 @@
-import {boolean, object, size, string} from 'superstruct';
-import {Language} from './refinements/Language';
-import {Username} from './refinements/Username';
+import { object, string } from 'superstruct';
 
 export const CreateGame = object({
   dictionary: string(),
