@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "concurrently --raw npm:dev:*",
     "build": "next build",
-    "start": "next start -p $PORT",
+    "start": "next start",
     "dev:start": "next dev",
     "dev:generate": "nodemon --watch spec.json --exec swagger-typescript-api --path spec.json --output src --name types.api.ts --no-client"
   },
