@@ -6,8 +6,6 @@ export function validate<T>(value: unknown, struct: Struct<T>) {
   try {
     return mask(value, struct);
   } catch (e) {
-    console.error(e);
-
     throw new ValidationError(e);
   }
 }

@@ -38,7 +38,7 @@ import { resolve } from 'utils/resolve';
  *             - data
  */
 export default resolve()({
-  get: async (value, { headers }) => ({
+  get: async (data, { headers }) => ({
     version: 1,
     docs: `${headers.host}/docs`
   })

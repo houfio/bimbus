@@ -33,7 +33,7 @@ export function resolve(...fns: Middleware<object, object>[]): Apply<object> {
 
       respond(req, res, await handler(result, req, res));
     } catch (e) {
-      console.log(e);
+      console.error(e);
 
       respond(req, res, e);
     }
