@@ -1,8 +1,11 @@
+import { HttpError } from 'errors/HttpError';
 import { validate } from 'guards/validate';
 import { withAuthentication } from 'middleware/withAuthentication';
 import { withQueryData } from 'middleware/withQueryData';
 import { withUserData } from 'middleware/withUserData';
+import { Dictionary } from 'models/Dictionary';
 import { Game } from 'models/Game';
+import { User } from 'models/User';
 import { CreateGame } from 'structs/CreateGame';
 import { PaginationFilters } from 'structs/filters/PaginationFilters';
 import { GetUser } from 'structs/GetUser';
@@ -130,14 +133,27 @@ export default resolve(
     }));
   },
   post: async ({ user }, { body }) => {
-    // TODO zorg dat je niet jezelf kan challengen
-    // TODO zorg dat je username en dictionary naam kan opgeven ipv ID
     const { dictionary, opponent } = validate(body, CreateGame);
 
+    const opponentData = await User.findOne({username: opponent}).exec();
+    const dictionaryData = await Dictionary.findOne({name: dictionary}).exec();
+
+    if (opponentData === null) {
+      throw new HttpError('Could not find user', 404);
+    }
+
+    if (dictionaryData === null) {
+      throw new HttpError('Could not find dictionary', 404);
+    }
+
+    if (opponentData._id.toString() === user._id.toString()) {
+      throw new HttpError('Cannot create game with self', 422);
+    }
+
     const game = await Game.create({
-      dictionary,
+      dictionary: dictionaryData._id.toString(),
       host: { user: user._id.toString() },
-      opponent: { user: opponent }
+      opponent: { user: opponentData._id.toString() }
     });
 
     return {
