@@ -18,10 +18,9 @@ jobs:
       - uses: docker/setup-buildx-action@v1
       - uses: docker/login-action@v1 
         with:
-          registry: docker.pkg.github.com
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: doggoschool
+          password: d291afb7-52c3-4bcc-b07e-ccb6b65cd5a2
       - uses: docker/build-push-action@v2
         with:
           push: true
-          tags: docker.pkg.github.com/avans-webs5/assessment-2021-paul-lex/bimbus:latest
+          tags: doggoschool/bimbus:latest
