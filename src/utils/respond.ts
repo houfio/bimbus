@@ -1,17 +1,19 @@
+import { Request, Response } from 'express';
 import { parse } from 'js2xmlparser';
-import { NextApiRequest, NextApiResponse } from 'next';
 
 import { xmlContent } from '../constants';
 import { HttpError } from '../errors/HttpError';
-import { InternalServerError } from '../errors/InternalServerError';
+import { InternalError } from '../errors/InternalError';
 
-export function respond(req: NextApiRequest, res: NextApiResponse, data?: object | object[] | Error) {
+export function respond(req: Request, res: Response, data?: object | object[] | Error) {
+  console.log('Responding to', req.ip);
+
   if (!data) {
     return res.status(204).send('204');
   }
 
   const failed = data instanceof Error;
-  const error = data instanceof HttpError ? data : new InternalServerError();
+  const error = data instanceof HttpError ? data : new InternalError();
   const { data: inner, ...rest } = data as any;
   const body = {
     status: {

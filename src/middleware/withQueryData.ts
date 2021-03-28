@@ -1,15 +1,15 @@
 import { Struct } from 'superstruct';
 
 import { validate } from '../guards/validate';
-import { Middleware } from '../types';
+import { middleware } from '../utils/middleware';
 
 type Output<V, K extends string> = {
   [T in K]: V
 };
 
-export function withQueryData<T, V, K extends string = 'query'>(struct: Struct<V>, name?: K): Middleware<T, T & Output<V, K>> {
-  return async (value, { query }) => ({
+export function withQueryData<T, V, K extends string = 'query'>(struct: Struct<V>, name?: K) {
+  return middleware<T, T & Output<V, K>>(async (value, { query, params }) => ({
     ...value,
-    [name ?? 'query']: validate(query, struct)
-  } as T & Output<V, K>);
+    [name ?? 'query']: validate({ ...query, ...params }, struct)
+  } as T & Output<V, K>));
 }

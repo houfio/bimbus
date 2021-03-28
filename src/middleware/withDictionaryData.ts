@@ -1,7 +1,8 @@
 import { exists } from '../guards/exists';
 import { Dictionary } from '../models/Dictionary';
 import { User } from '../models/User';
-import { Middleware, ModelType } from '../types';
+import { ModelType } from '../types';
+import { middleware } from '../utils/middleware';
 
 type Input = {
   user: ModelType<typeof User>,
@@ -11,8 +12,8 @@ type Output = {
   dictionary: ModelType<typeof Dictionary>
 };
 
-export function withDictionaryData<T extends Input>(): Middleware<T, T & Output> {
-  return async (value) => {
+export function withDictionaryData<T extends Input>() {
+  return middleware<T, T & Output>(async (value) => {
     const { user, query: { slug } } = value;
 
     const dictionary = await Dictionary.findOne({
@@ -26,5 +27,5 @@ export function withDictionaryData<T extends Input>(): Middleware<T, T & Output>
       ...value,
       dictionary
     };
-  };
+  });
 }

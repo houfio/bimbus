@@ -1,12 +1,14 @@
 import { PaginateResult } from 'mongoose';
 
-export function paginated<T>(data: PaginateResult<T>, map: (value: T) => object) {
+import { serialize } from './serialize';
+
+export function paginated<T>(data: PaginateResult<T>) {
   return {
     page: {
       current: data.page ?? 1 - 1,
       total: data.totalPages,
       size: data.limit
     },
-    data: data.docs.map(map)
+    data: serialize(data.docs)
   };
 }

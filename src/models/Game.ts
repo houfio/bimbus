@@ -27,7 +27,8 @@ const schema = new Schema<Game>({
     },
     score: {
       type: Number,
-      default: 0
+      default: 0,
+      required: true
     }
   },
   opponent: {
@@ -38,7 +39,8 @@ const schema = new Schema<Game>({
     },
     score: {
       type: Number,
-      default: 0
+      default: 0,
+      required: true
     }
   }
 }, {

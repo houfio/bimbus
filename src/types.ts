@@ -1,20 +1,32 @@
-import { Model } from 'mongoose';
-import { NextApiRequest, NextApiResponse } from 'next';
+import { Request, Router } from 'express';
+import { Document, Model } from 'mongoose';
+import { Server } from 'socket.io';
 
-import { store } from './utils/store';
+export type RouteHandler = {
+  (): Route,
+  (a: Middleware<{}>): Route,
+  <A>(a: Middleware<{}, A>, b: Middleware<A>): Route,
+  <A, B>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B>): Route,
+  <A, B, C>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C>): Route,
+  <A, B, C, D>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D>): Route,
+  <A, B, C, D, E>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E>): Route,
+  <A, B, C, D, E, F>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F>): Route,
+  <A, B, C, D, E, F, G>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F, G>, h: Middleware<G>): Route
+};
+export type Route = {
+  (io: Server): Router,
+  path: string
+};
+export type Method = 'all' | 'get' | 'post' | 'put' | 'delete';
+export type MiddlewareHandler<A, B> = (ctx: A, req: Request) => B | Promise<B>;
+export type Middleware<A, B = unknown> = MiddlewareHandler<A, B> & {
+  method: Method
+};
 
-export type Breakpoint = 'phone' | 'tabletPortrait' | 'tabletLandscape' | 'laptop' | 'desktop';
-export type Breakpoints<T> = Partial<Record<Breakpoint, T>>;
-
-export type Method = 'get' | 'post' | 'put' | 'delete';
-export type Apply<T extends object> = (handlers: RequestHandlers<T>) => (req: NextApiRequest, res: NextApiResponse) => Promise<void>;
-export type Middleware<A, B> = (value: A, req: NextApiRequest, res: NextApiResponse) => Promise<B>;
-export type RequestHandler<T extends object> = (data: T, req: NextApiRequest, res: NextApiResponse) => Promise<object | object[] | undefined>;
-export type RequestHandlers<T extends object> = Partial<Record<Method, RequestHandler<T>>>;
+export type SerializerHandler<T extends Document> = (object: T) => [object, object];
+export type Serializer<T extends Document> = SerializerHandler<T> & {
+  model: Model<T>
+};
 
 export type Role = 'user' | 'admin';
 export type ModelType<T> = T extends Model<infer V> ? V : never;
-export type ResponseType<T> = T extends { data: infer V } ? NonNullable<V> : never;
-
-export type State = ReturnType<typeof store.getState>;
-export type Dispatch = typeof store.dispatch;

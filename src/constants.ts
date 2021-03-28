@@ -1,11 +1,11 @@
-import { Breakpoint } from './types';
+import { dictionarySerializer } from './serializers/dictionary';
+import { gameSerializer } from './serializers/game';
+import { userSerializer } from './serializers/user';
 
 export const xmlContent = 'application/xml';
 
-export const breakpoints: Record<Breakpoint, number> = {
-  phone: 0,
-  tabletPortrait: 37.5,
-  tabletLandscape: 56.25,
-  laptop: 75,
-  desktop: 93.75
-};
+export const serializers = [
+  userSerializer,
+  dictionarySerializer,
+  gameSerializer
+];

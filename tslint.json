@@ -1,26 +1,14 @@
 {
   "extends": [
-    "tslint:recommended",
-    "tslint-react"
+    "tslint:recommended"
   ],
-  "linterOptions": {
-    "exclude": [
-      "**/*.d.ts"
-    ]
-  },
   "rules": {
     "arrow-parens": true,
     "ban-types": false,
     "curly": true,
     "eofline": true,
-    "jsx-alignment": true,
-    "jsx-curly-brace-presence": true,
-    "jsx-curly-spacing": [true, "never"],
-    "jsx-equals-spacing": [true, "never"],
-    "jsx-no-lambda": false,
-    "jsx-self-close": true,
-    "jsx-wrap-multiline": true,
     "indent": [true, "spaces", 2],
+    "no-console": false,
     "no-empty": false,
     "no-unused-expression": [true, "allow-tagged-template"],
     "object-literal-sort-keys": false,
@@ -30,9 +18,10 @@
       "named-imports-order": "case-insensitive",
       "module-source-path": "full"
     }],
+    "quotemark": [true, "single", "avoid-escape"],
     "trailing-comma": [true, {
       "multiline": "never"
     }],
-    "quotemark": [true, "single", "jsx-double", "avoid-escape"]
+    "unified-signatures": false
   }
 }
