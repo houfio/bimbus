@@ -1,6 +1,9 @@
 import { Document, model, models, PaginateModel, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 
+import {Language} from '../structs/refinements/Language';
+import {Slug} from '../structs/refinements/Slug';
+
 interface Dictionary extends Document {
   slug: string,
   name: string,
@@ -12,7 +15,10 @@ interface Dictionary extends Document {
 const schema = new Schema<Dictionary>({
   slug: {
     type: String,
-    required: true
+    required: true,
+    validate: {
+      validator: Slug.is
+    }
   },
   name: {
     type: String,
@@ -20,7 +26,10 @@ const schema = new Schema<Dictionary>({
   },
   language: {
     type: String,
-    required: true
+    required: true,
+    validate: {
+      validator: Language.is
+    }
   },
   public: {
     type: Boolean,

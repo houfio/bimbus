@@ -35,7 +35,12 @@ const schema = new Schema<Game>({
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true
+      required: true,
+      validate: {
+        validator(this: Game, value: Schema.Types.ObjectId) {
+          return this.host.user.toString() !== value.toString();
+        }
+      }
     },
     score: {
       type: Number,

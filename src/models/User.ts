@@ -1,6 +1,9 @@
 import { Document, model, models, PaginateModel, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 
+import {Email} from '../structs/refinements/Email';
+import {Password} from '../structs/refinements/Password';
+import {Username} from '../structs/refinements/Username';
 import { Role } from '../types';
 
 interface User extends Document {
@@ -15,16 +18,25 @@ const schema = new Schema<User>({
   username: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    validate: {
+      validator: Username.is
+    }
   },
   password: {
     type: String,
-    required: true
+    required: true,
+    validate: {
+      validator: Password.is
+    }
   },
   email: {
     type: String,
     required: true,
-    unique: true
+    unique: true,
+    validate: {
+      validator: Email.is
+    }
   },
   role: {
     type: String,
