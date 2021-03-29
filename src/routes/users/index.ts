@@ -1,9 +1,13 @@
 import { auth } from '../../guards/auth';
 import { role } from '../../guards/role';
 import { withBodyData } from '../../middleware/withBodyData';
+import {withQueryData} from '../../middleware/withQueryData';
 import { withResponse } from '../../middleware/withResponse';
 import { User } from '../../models/User';
 import { CreateUser } from '../../structs/CreateUser';
+import {PaginationFilters} from '../../structs/filters/PaginationFilters';
+import {UserFilters} from '../../structs/filters/UserFilters';
+import {filter} from '../../utils/filter';
 import { route } from '../../utils/route';
 
 import { userRoute } from './user';
@@ -32,6 +36,20 @@ import { userRoute } from './user';
  *           application/xml:
  *             schema:
  *               $ref: '#/components/schemas/users'
+ *     parameters:
+ *       - $ref: '#/components/parameters/page'
+ *       - $ref: '#/components/parameters/size'
+ *       - in: query
+ *         name: username
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *           enum:
+ *             - admin
+ *             - user
  *   post:
  *     summary: Create a user
  *     tags:
@@ -92,12 +110,20 @@ import { userRoute } from './user';
  *         - email
  */
 export const usersRoute = route('/users', userRoute)(
-  withResponse('get', async (ctx, { headers }) => {
+  withQueryData(UserFilters, 'filters'),
+  withQueryData(PaginationFilters, 'pagination'),
+  withResponse('get', async ({ filters, pagination }, { headers }) => {
     const user = await auth(headers);
 
     role(user, 'admin');
 
-    return User.find();
+    return await User.paginate({
+      username: { $regex: filters.username ?? '' },
+      ...filter('role', filters.role)
+    }, {
+      page: pagination.page + 1,
+      limit: pagination.size
+    });
   }),
   withBodyData(CreateUser),
   withResponse('post', async ({ body: { username, password, email } }) => User.create({
