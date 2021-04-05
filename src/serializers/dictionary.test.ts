@@ -1,5 +1,3 @@
-import { expect } from 'chai';
-
 import { dictionarySerializer } from './dictionary';
 
 const object: any = {
@@ -9,24 +7,22 @@ const object: any = {
   public: true
 };
 
-describe('dictionarySerializer()', () => {
-  it('should return the correct length', () => {
-    const serialized = dictionarySerializer(object);
+it('should return the correct length', () => {
+  const serialized = dictionarySerializer(object);
 
-    expect(serialized).to.have.length(2);
+  expect(serialized.length).toBe(2);
+});
+
+it('should populate the fields', () => {
+  const serialized = dictionarySerializer(object);
+
+  expect(serialized[0]).toEqual({
+    slug: 'slug',
+    name: 'name'
   });
 
-  it('should populate the fields', () => {
-    const serialized = dictionarySerializer(object);
-
-    expect(serialized[0]).to.deep.equal({
-      slug: 'slug',
-      name: 'name'
-    });
-
-    expect(serialized[1]).to.deep.equal({
-      language: 'language',
-      public: true
-    });
+  expect(serialized[1]).toEqual({
+    language: 'language',
+    public: true
   });
 });
