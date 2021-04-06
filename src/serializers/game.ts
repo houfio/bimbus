@@ -8,4 +8,4 @@ export const gameSerializer = serializer(Game, (object) => [{
 }, {
   hostScore: object.host.score,
   opponentScore: object.opponent.score
-}])
+}]);

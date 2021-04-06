@@ -1,13 +1,13 @@
 import { auth } from '../../guards/auth';
 import { role } from '../../guards/role';
 import { withBodyData } from '../../middleware/withBodyData';
-import {withQueryData} from '../../middleware/withQueryData';
+import { withQueryData } from '../../middleware/withQueryData';
 import { withResponse } from '../../middleware/withResponse';
 import { User } from '../../models/User';
 import { CreateUser } from '../../structs/CreateUser';
-import {PaginationFilters} from '../../structs/filters/PaginationFilters';
-import {UserFilters} from '../../structs/filters/UserFilters';
-import {filter} from '../../utils/filter';
+import { PaginationFilters } from '../../structs/filters/PaginationFilters';
+import { UserFilters } from '../../structs/filters/UserFilters';
+import { filter } from '../../utils/filter';
 import { route } from '../../utils/route';
 
 import { userRoute } from './user';

@@ -1,4 +1,4 @@
-import {enums, object, optional, string} from 'superstruct';
+import { enums, object, optional, string } from 'superstruct';
 
 export const UserFilters = object({
   username: optional(string()),

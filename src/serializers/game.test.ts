@@ -10,7 +10,7 @@ const object: any = {
     user: 'opponent',
     score: 1
   }
-}
+};
 
 it('should return the correct length', () => {
   const serialized = gameSerializer(object);

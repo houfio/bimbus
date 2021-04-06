@@ -69,6 +69,13 @@ import { route } from '../utils/route';
  *         type: string
  *       required: true
  *       description: The slug of the dictionary
+ *     word:
+ *       in: path
+ *       name: word
+ *       schema:
+ *         type: string
+ *       required: true
+ *       description: The word
  *     page:
  *       in: query
  *       name: page
@@ -102,6 +109,8 @@ import { route } from '../utils/route';
  *     description: Access to users
  *   - name: dictionaries
  *     description: Access to dictionaries
+ *   - name: words
+ *     description: Access to words
  *   - name: games
  *     description: Access to games
  */

@@ -1,8 +1,8 @@
 import { Document, model, models, PaginateModel, Schema } from 'mongoose';
 import paginate from 'mongoose-paginate-v2';
 
-import {Language} from '../structs/refinements/Language';
-import {Slug} from '../structs/refinements/Slug';
+import { Language } from '../structs/refinements/Language';
+import { Slug } from '../structs/refinements/Slug';
 
 interface Dictionary extends Document {
   slug: string,
@@ -17,7 +17,7 @@ const schema = new Schema<Dictionary>({
     type: String,
     required: true,
     validate: {
-      validator: Slug.is
+      validator: (value: unknown) => Slug.is(value)
     }
   },
   name: {
@@ -28,7 +28,7 @@ const schema = new Schema<Dictionary>({
     type: String,
     required: true,
     validate: {
-      validator: Language.is
+      validator: (value: unknown) => Language.is(value)
     }
   },
   public: {
@@ -36,10 +36,14 @@ const schema = new Schema<Dictionary>({
     required: true
   },
   words: {
-    type: [{
-      type: String,
-      unique: true
-    }],
+    type: [String],
+    validate: {
+      validator(value: string[]) {
+        const length = String.length ? value[0].length : -1;
+
+        return value.every((v, i) => value.indexOf(v) === i && (length === -1 || v.length === length));
+      }
+    },
     default: []
   }
 }, {

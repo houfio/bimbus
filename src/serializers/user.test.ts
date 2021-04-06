@@ -5,7 +5,7 @@ const object: any = {
   role: 'role',
   email: 'email',
   dictionaries: []
-}
+};
 
 it('should return the correct length', () => {
   const serialized = userSerializer(object);

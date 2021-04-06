@@ -7,6 +7,7 @@ import { withUserData } from '../../middleware/withUserData';
 import { GetDictionary } from '../../structs/GetDictionary';
 import { UpdateDictionary } from '../../structs/UpdateDictionary';
 import { route } from '../../utils/route';
+import { wordsRoute } from '../words';
 
 /**
  * @openapi
@@ -116,7 +117,7 @@ import { route } from '../../utils/route';
  *           required:
  *             - data
  */
-export const dictionaryRoute = route('/:slug')(
+export const dictionaryRoute = route('/:slug', wordsRoute)(
   withAuthentication(),
   withQueryData(GetDictionary),
   withUserData(),

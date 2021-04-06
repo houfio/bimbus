@@ -10,7 +10,7 @@ export function serialize(object: object | object[], compact = false): object | 
     return object;
   }
 
-  console.log('Serializing object of type', object.constructor)
+  console.log('Serializing object of type', object.constructor);
 
   const serializer = serializers.find((s) => s.model === object.constructor);
 
