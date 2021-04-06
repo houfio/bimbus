@@ -1,6 +1,6 @@
+import { authorize } from '@thream/socketio-jwt';
 import { config } from 'dotenv';
-import express from 'express';
-import { NextFunction, Request, Response } from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { createServer } from 'http';
 import { connect } from 'mongoose';
 import { Server } from 'socket.io';
@@ -13,7 +13,7 @@ import { respond } from './utils/respond';
 async function main() {
   const app = express();
   const server = createServer(app);
-  const io = new Server(server, { path: '/ws' });
+  const io = new Server(server);
   const port = process.env.PORT ?? 8000;
   const database = process.env.DATABASE_URL ?? '';
   const spec = swaggerSpec({
@@ -30,7 +30,20 @@ async function main() {
       ]
     },
     apis: ['src/routes/**/*.ts']
-  })
+  });
+
+  io.use(authorize({
+    secret: process.env.SECRET || '',
+    onAuthentication: async (decodedToken) => decodedToken
+  }));
+
+  io.on('connection', (socket) => {
+    console.log(`User ${socket.user} connected`);
+
+    socket.on('disconnect', () => {
+      console.log(`User ${socket.user} disconnected`);
+    });
+  });
 
   await connect(database, {
     useNewUrlParser: true,
@@ -41,6 +54,7 @@ async function main() {
 
   app.use(express.json());
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(spec));
+  app.use(express.static('public'));
   app.use(indexRoute.path, indexRoute(io));
   app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
     console.error(err);
