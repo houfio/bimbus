@@ -39,7 +39,7 @@ const schema = new Schema<Dictionary>({
     type: [String],
     validate: {
       validator(value: string[]) {
-        const length = String.length ? value[0].length : -1;
+        const length = value.length ? value[0].length : -1;
 
         return value.every((v, i) => value.indexOf(v) === i && (length === -1 || v.length === length));
       }
