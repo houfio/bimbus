@@ -69,6 +69,13 @@ import { route } from '../utils/route';
  *         type: string
  *       required: true
  *       description: The slug of the dictionary
+ *     opponent:
+ *       in: path
+ *       name: opponent
+ *       schema:
+ *         type: string
+ *       required: true
+ *       description: An opponents username
  *     word:
  *       in: path
  *       name: word

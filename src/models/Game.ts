@@ -19,6 +19,15 @@ const schema = new Schema<Game>({
     ref: 'Dictionary',
     required: true
   },
+  completed: {
+    type: Boolean,
+    required: true,
+    default: false,
+    index: {
+      unique: true,
+      partialFilterExpression: { completed: false }
+    }
+  },
   host: {
     user: {
       type: Schema.Types.ObjectId,

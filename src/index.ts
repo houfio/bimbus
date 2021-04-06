@@ -8,6 +8,7 @@ import swaggerSpec from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
 import { indexRoute } from './routes';
+import { socketConnect } from './socket/connect';
 import { respond } from './utils/respond';
 
 async function main() {
@@ -37,13 +38,7 @@ async function main() {
     onAuthentication: async (decodedToken) => decodedToken
   }));
 
-  io.on('connection', (socket) => {
-    console.log(`User ${socket.user} connected`);
-
-    socket.on('disconnect', () => {
-      console.log(`User ${socket.user} disconnected`);
-    });
-  });
+  io.on('connection', socketConnect);
 
   await connect(database, {
     useNewUrlParser: true,

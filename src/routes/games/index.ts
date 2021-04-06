@@ -13,6 +13,8 @@ import { PaginationFilters } from '../../structs/filters/PaginationFilters';
 import { GetUser } from '../../structs/GetUser';
 import { route } from '../../utils/route';
 
+import { gameRoute } from './game';
+
 /**
  * @openapi
  * /users/{username}/games:
@@ -115,7 +117,7 @@ import { route } from '../../utils/route';
  *         - dictionary
  *         - opponent
  */
-export const gamesRoute = route('/games')(
+export const gamesRoute = route('/games', gameRoute)(
   withAuthentication(),
   withQueryData(GetUser),
   withUserData(),
