@@ -27,16 +27,16 @@
           <div id="connectPart" class="part hide">
             <div class="form-group">
               <label for="token">Token</label>
-              <input type="text" class="form-control" id="token" required>
+              <input type="text" class="form-control" id="token">
               <small class="form-text text-muted">The JWT token used for authentication</small>
             </div>
             <div class="form-group">
               <label for="username">Username</label>
-              <input type="text" class="form-control" id="username" required/>
+              <input type="text" class="form-control" id="username"/>
             </div>
             <div class="form-group">
               <label for="opponent">Opponent</label>
-              <input type="text" class="form-control" id="opponent" required/>
+              <input type="text" class="form-control" id="opponent"/>
             </div>
             <button id="connectButton" class="btn btn-primary">Connect</button>
           </div>
@@ -81,7 +81,7 @@
           if (!data.status.success) {
             log('CLIENT', 'No active game found via API...');
           } else {
-            oldSocket = createSocket(data.data.roomId, token);
+            oldSocket = createSocket(`${username}-${opponent}`, token);
           }
 
           this.disabled = false;
@@ -142,9 +142,13 @@
         const date = new Date();
 
         document.getElementById('log').prepend(
-          `[${date.getHours()}:${date.getMinutes()}:${date.getMilliseconds()}] [${from}] ${msg}`,
+          `[${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}] [${from}] ${msg}`,
           document.createElement('br')
         );
+      }
+
+      function pad(number) {
+        return String(number).padStart(2, '0')
       }
 
       openConnectPart();

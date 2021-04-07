@@ -1,14 +1,20 @@
 import { Document, model, models, PaginateModel, Schema } from 'mongoose';
+import autopopulate from 'mongoose-autopopulate';
 import paginate from 'mongoose-paginate-v2';
 
+import { ModelType } from '../types';
+
+import { Dictionary } from './Dictionary';
+import { User } from './User';
+
 interface Game extends Document {
-  dictionary: Schema.Types.ObjectId,
+  dictionary: ModelType<typeof Dictionary>,
   host: {
-    user: Schema.Types.ObjectId,
+    user: ModelType<typeof User>,
     score: Number
   },
   opponent: {
-    user: Schema.Types.ObjectId,
+    user: ModelType<typeof User>,
     score: Number
   }
 }
@@ -17,7 +23,8 @@ const schema = new Schema<Game>({
   dictionary: {
     type: Schema.Types.ObjectId,
     ref: 'Dictionary',
-    required: true
+    required: true,
+    autopopulate: true
   },
   completed: {
     type: Boolean,
@@ -32,7 +39,8 @@ const schema = new Schema<Game>({
     user: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true
+      required: true,
+      autopopulate: true
     },
     score: {
       type: Number,
@@ -45,6 +53,7 @@ const schema = new Schema<Game>({
       type: Schema.Types.ObjectId,
       ref: 'User',
       required: true,
+      autopopulate: true,
       validate: {
         validator(this: Game, value: Schema.Types.ObjectId) {
           return this.host.user.toString() !== value.toString();
@@ -62,5 +71,6 @@ const schema = new Schema<Game>({
 });
 
 schema.plugin(paginate as any);
+schema.plugin(autopopulate as any);
 
 export const Game = (models.Game || model('Game', schema)) as PaginateModel<Game>;

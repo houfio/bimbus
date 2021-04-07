@@ -1,13 +1,19 @@
 import { gameSerializer } from './game';
 
 const object: any = {
-  dictionary: 'dictionary',
+  dictionary: {
+    slug: 'dictionary'
+  },
   host: {
-    user: 'host',
+    user: {
+      username: 'host'
+    },
     score: 0
   },
   opponent: {
-    user: 'opponent',
+    user: {
+      username: 'opponent'
+    },
     score: 1
   }
 };

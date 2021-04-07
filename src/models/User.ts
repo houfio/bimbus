@@ -1,17 +1,20 @@
 import { Document, model, models, PaginateModel, Schema } from 'mongoose';
+import autopopulate from 'mongoose-autopopulate';
 import paginate from 'mongoose-paginate-v2';
 
 import { Email } from '../structs/refinements/Email';
 import { Password } from '../structs/refinements/Password';
 import { Username } from '../structs/refinements/Username';
-import { Role } from '../types';
+import { ModelType, Role } from '../types';
+
+import { Dictionary } from './Dictionary';
 
 interface User extends Document {
   username: string,
   password: string,
   email: string,
   role: Role,
-  dictionaries: Schema.Types.ObjectId[]
+  dictionaries: ModelType<typeof Dictionary>[]
 }
 
 const schema = new Schema<User>({
@@ -46,7 +49,8 @@ const schema = new Schema<User>({
   dictionaries: {
     type: [{
       type: Schema.Types.ObjectId,
-      ref: 'Dictionary'
+      ref: 'Dictionary',
+      autopopulate: true
     }],
     required: true,
     default: []
@@ -56,5 +60,6 @@ const schema = new Schema<User>({
 });
 
 schema.plugin(paginate as any);
+schema.plugin(autopopulate as any);
 
 export const User = (models.User || model('User', schema)) as PaginateModel<User>;

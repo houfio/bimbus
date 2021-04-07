@@ -1,10 +1,8 @@
-import { exists } from '../../guards/exists';
 import { withAuthentication } from '../../middleware/withAuthorization';
+import { withGameData } from '../../middleware/withGameData';
 import { withQueryData } from '../../middleware/withQueryData';
 import { withResponse } from '../../middleware/withResponse';
 import { withUserData } from '../../middleware/withUserData';
-import { Game } from '../../models/Game';
-import { User } from '../../models/User';
 import { GetGame } from '../../structs/GetGame';
 import { route } from '../../utils/route';
 
@@ -52,31 +50,7 @@ export const gameRoute = route('/:opponent')(
   withAuthentication(),
   withQueryData(GetGame),
   withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
-  withResponse('get', async ({ user, query: { opponent } }) => {
-    const opponentData = await User.findOne({ username: opponent });
-
-    exists(opponentData, 'user', opponent);
-
-    const game = await Game.findOne({
-      $or: [{
-        $and: [
-          { 'host.user': user.id },
-          { 'opponent.user': opponentData.id }
-        ]
-      }, {
-        $and: [
-          { 'host.user': opponentData.id },
-          { 'opponent.user': user.id }
-        ]
-      }],
-      'completed': false
-    });
-
-    exists(game, 'game', opponent);
-
-    return {
-      roomId: `${game.host.user}-${game.opponent.user}`,
-      ...game
-    };
-  })
+  withUserData((ctx) => ctx.query.opponent, (value, ctx) => ({ ...ctx, opponent: value })),
+  withGameData((ctx) => [ctx.user, ctx.opponent]),
+  withResponse('get', async ({ game }) => game)
 );
