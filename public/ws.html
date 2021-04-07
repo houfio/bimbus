@@ -81,7 +81,7 @@
           if (!data.status.success) {
             log('CLIENT', 'No active game found via API...');
           } else {
-            oldSocket = createSocket(`${username}-${opponent}`, token);
+            oldSocket = createSocket(`${data.data.host}-${data.data.opponent}`, token);
           }
 
           this.disabled = false;
