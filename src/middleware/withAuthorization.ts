@@ -3,13 +3,13 @@ import { User } from '../models/User';
 import { ModelType } from '../types';
 import { middleware } from '../utils/middleware';
 
-type Output = {
+type DefaultOutput<I> = I & {
   currentUser: ModelType<typeof User>
 };
 
-export function withAuthentication<T>() {
-  return middleware<T, T & Output>(async (value, { headers }) => ({
-    ...value,
-    currentUser: await auth(headers)
-  }));
+export function withAuthentication<I, O = DefaultOutput<I>>(
+  set: (value: ModelType<typeof User>, ctx: I) => O
+    = (value, ctx) => ({ ...ctx, currentUser: value }) as any
+) {
+  return middleware<I, O>(async (ctx, { headers }) => set(await auth(headers), ctx));
 }

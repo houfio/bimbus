@@ -11,7 +11,8 @@ export type RouteHandler = {
   <A, B, C, D>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D>): Route,
   <A, B, C, D, E>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E>): Route,
   <A, B, C, D, E, F>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F>): Route,
-  <A, B, C, D, E, F, G>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F, G>, h: Middleware<G>): Route
+  <A, B, C, D, E, F, G>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F, G>, h: Middleware<G>): Route,
+  <A, B, C, D, E, F, G, H>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F, G>, h: Middleware<G, H>, i: Middleware<H>): Route
 };
 export type Route = {
   (io: Server): Router,

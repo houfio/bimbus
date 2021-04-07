@@ -91,8 +91,8 @@ import { wordRoute } from './word';
 export const wordsRoute = route('/words', wordRoute)(
   withAuthentication(),
   withQueryData(GetDictionary),
-  withUserData(),
-  withDictionaryData(),
+  withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
+  withDictionaryData((ctx) => [ctx.query.slug, ctx.user]),
   withResponse('get', ({ dictionary }) => dictionary.words),
   withBodyData(CreateWord),
   withResponse('post', async ({ dictionary, body: { word } }) => {

@@ -1,13 +1,11 @@
 import { HttpError } from '../../errors/HttpError';
-import { exists } from '../../guards/exists';
 import { withAuthentication } from '../../middleware/withAuthorization';
 import { withBodyData } from '../../middleware/withBodyData';
+import { withDictionaryData } from '../../middleware/withDictionaryData';
 import { withQueryData } from '../../middleware/withQueryData';
 import { withResponse } from '../../middleware/withResponse';
 import { withUserData } from '../../middleware/withUserData';
-import { Dictionary } from '../../models/Dictionary';
 import { Game } from '../../models/Game';
-import { User } from '../../models/User';
 import { CreateGame } from '../../structs/CreateGame';
 import { PaginationFilters } from '../../structs/filters/PaginationFilters';
 import { GetUser } from '../../structs/GetUser';
@@ -120,8 +118,8 @@ import { gameRoute } from './game';
 export const gamesRoute = route('/games', gameRoute)(
   withAuthentication(),
   withQueryData(GetUser),
-  withUserData(),
-  withQueryData(PaginationFilters, 'pagination'),
+  withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
+  withQueryData(PaginationFilters, (value, ctx) => ({ ...ctx, pagination: value })),
   withResponse('get', ({ user, pagination }) => Game.paginate({
     $or: [
       { 'host.user': user.id },
@@ -132,21 +130,17 @@ export const gamesRoute = route('/games', gameRoute)(
     limit: pagination.size
   })),
   withBodyData(CreateGame),
-  withResponse('post', async ({ user, body: { dictionary, opponent } }) => {
-    const opponentData = await User.findOne({ username: opponent });
-    const dictionaryData = await Dictionary.findOne({ slug: dictionary });
-
-    exists(opponentData, 'user', opponent);
-    exists(dictionaryData, 'dictionary', dictionary);
-
-    if (opponentData._id.equals(user._id)) {
+  withUserData((ctx) => ctx.body.opponent, (value, ctx) => ({ ...ctx, opponent: value }), false),
+  withDictionaryData((ctx) => [ctx.body.dictionary, ctx.user]),
+  withResponse('post', async ({ user, opponent, dictionary }) => {
+    if (user.username === opponent.username) {
       throw new HttpError('Cannot create a game with yourself', 422);
     }
 
     return await Game.create({
-      dictionary: dictionaryData._id,
+      dictionary: dictionary._id,
       host: { user: user._id },
-      opponent: { user: opponentData._id }
+      opponent: { user: opponent._id }
     });
   })
 );

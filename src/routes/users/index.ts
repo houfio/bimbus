@@ -110,8 +110,8 @@ import { userRoute } from './user';
  *         - email
  */
 export const usersRoute = route('/users', userRoute)(
-  withQueryData(UserFilters, 'filters'),
-  withQueryData(PaginationFilters, 'pagination'),
+  withQueryData(UserFilters, (value, ctx) => ({ ...ctx, filters: value })),
+  withQueryData(PaginationFilters, (value, ctx) => ({ ...ctx, pagination: value })),
   withResponse('get', async ({ filters, pagination }, { headers }) => {
     const user = await auth(headers);
 

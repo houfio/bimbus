@@ -5,9 +5,9 @@ import { middleware } from '../utils/middleware';
 import { paginated } from '../utils/paginated';
 import { serialize } from '../utils/serialize';
 
-export function withResponse<T>(method: Method, fn: MiddlewareHandler<T, object | object[]>) {
-  return middleware<T, T>(async (ctx, req) => {
-    const response = await fn(ctx, req);
+export function withResponse<I>(method: Method, handler: MiddlewareHandler<I, object | object[]>) {
+  return middleware<I, I>(async (ctx, req) => {
+    const response = await handler(ctx, req);
 
     if (!Array.isArray(response) && (response as any).page) {
       return paginated(response as PaginateResult<unknown>);

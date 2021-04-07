@@ -133,7 +133,7 @@ import { gamesRoute } from '../games';
 export const userRoute = route('/:username', dictionariesRoute, gamesRoute)(
   withAuthentication(),
   withQueryData(GetUser),
-  withUserData(),
+  withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
   withResponse('get', ({ user }) => user),
   withResponse('delete', async ({ user }) => {
     await user.delete();

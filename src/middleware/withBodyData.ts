@@ -3,13 +3,14 @@ import { Struct } from 'superstruct';
 import { validate } from '../guards/validate';
 import { middleware } from '../utils/middleware';
 
-type Output<V, K extends string> = {
-  [T in K]: V
+type DefaultOutput<I, V> = I & {
+  body: V
 };
 
-export function withBodyData<T, V, K extends string = 'body'>(struct: Struct<V>, name?: K) {
-  return middleware<T, T & Output<V, K>>(async (value, { body }) => ({
-    ...value,
-    [name ?? 'body']: validate(body, struct)
-  } as T & Output<V, K>));
+export function withBodyData<I, V, O = DefaultOutput<I, V>>(
+  struct: Struct<V>,
+  set: (value: V, ctx: I) => O
+    = (value, ctx) => ({ ...ctx, body: value }) as any
+) {
+  return middleware<I, O>(async (ctx, { body }) => set(validate(body, struct), ctx));
 }

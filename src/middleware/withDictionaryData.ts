@@ -4,17 +4,17 @@ import { User } from '../models/User';
 import { ModelType } from '../types';
 import { middleware } from '../utils/middleware';
 
-type Input = {
-  user: ModelType<typeof User>,
-  query: { slug: string }
-};
-type Output = {
+type DefaultOutput<I> = I & {
   dictionary: ModelType<typeof Dictionary>
 };
 
-export function withDictionaryData<T extends Input>() {
-  return middleware<T, T & Output>(async (value) => {
-    const { user, query: { slug } } = value;
+export function withDictionaryData<I, O = DefaultOutput<I>>(
+  get: (ctx: I) => [string, ModelType<typeof User>],
+  set: (value: ModelType<typeof Dictionary>, ctx: I) => O
+    = (value, ctx) => ({ ...ctx, dictionary: value }) as any
+) {
+  return middleware<I, O>(async (ctx) => {
+    const [slug, user] = get(ctx);
 
     const dictionary = await Dictionary.findOne({
       _id: { $in: user.dictionaries },
@@ -23,9 +23,6 @@ export function withDictionaryData<T extends Input>() {
 
     exists(dictionary, 'dictionary', slug);
 
-    return {
-      ...value,
-      dictionary
-    };
+    return set(dictionary, ctx);
   });
 }

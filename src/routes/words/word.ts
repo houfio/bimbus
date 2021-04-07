@@ -81,8 +81,8 @@ import { route } from '../../utils/route';
 export const wordRoute = route('/:word')(
   withAuthentication(),
   withQueryData(GetWord),
-  withUserData(),
-  withDictionaryData(),
+  withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
+  withDictionaryData((ctx) => [ctx.query.slug, ctx.user]),
   withResponse('get', ({ dictionary, query: { word } }) => {
     exists(dictionary.words.includes(word), 'word', word);
 

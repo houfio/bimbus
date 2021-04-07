@@ -3,13 +3,14 @@ import { Struct } from 'superstruct';
 import { validate } from '../guards/validate';
 import { middleware } from '../utils/middleware';
 
-type Output<V, K extends string> = {
-  [T in K]: V
+type DefaultOutput<I, V> = I & {
+  query: V
 };
 
-export function withQueryData<T, V, K extends string = 'query'>(struct: Struct<V>, name?: K) {
-  return middleware<T, T & Output<V, K>>(async (value, { query, params }) => ({
-    ...value,
-    [name ?? 'query']: validate({ ...query, ...params }, struct)
-  } as T & Output<V, K>));
+export function withQueryData<I, V, O = DefaultOutput<I, V>>(
+  struct: Struct<V>,
+  set: (value: V, ctx: I) => O
+    = (value, ctx) => ({ ...ctx, query: value }) as any
+) {
+  return middleware<I, O>(async (ctx, { query, params }) => set(validate({ ...query, ...params }, struct), ctx));
 }

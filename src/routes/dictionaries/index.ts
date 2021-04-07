@@ -126,9 +126,9 @@ import { dictionaryRoute } from './dictionary';
 export const dictionariesRoute = route('/dictionaries', dictionaryRoute)(
   withAuthentication(),
   withQueryData(GetUser),
-  withUserData(),
-  withQueryData(DictionaryFilters, 'filters'),
-  withQueryData(PaginationFilters, 'pagination'),
+  withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
+  withQueryData(DictionaryFilters, (value, ctx) => ({ ...ctx, filters: value })),
+  withQueryData(PaginationFilters, (value, ctx) => ({ ...ctx, pagination: value })),
   withResponse('get', ({ user, filters, pagination }) => Dictionary.paginate({
     _id: { $in: user.dictionaries },
     ...filter('public', filters.public),

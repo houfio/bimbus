@@ -51,35 +51,32 @@ import { route } from '../../utils/route';
 export const gameRoute = route('/:opponent')(
   withAuthentication(),
   withQueryData(GetGame),
-  withUserData(),
-  withResponse('get', async ({user, query: {opponent}}) => {
+  withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
+  withResponse('get', async ({ user, query: { opponent } }) => {
     const opponentData = await User.findOne({ username: opponent });
 
     exists(opponentData, 'user', opponent);
 
     const game = await Game.findOne({
-        $or: [
-            {
-                $and: [
-                    { 'host.user': user.id },
-                    { 'opponent.user': opponentData.id }
-                ]
-            },
-            {
-                $and: [
-                    { 'host.user': opponentData.id },
-                    { 'opponent.user': user.id }
-                ]
-            }
-        ],
-        'completed': false
-    })
+      $or: [{
+        $and: [
+          { 'host.user': user.id },
+          { 'opponent.user': opponentData.id }
+        ]
+      }, {
+        $and: [
+          { 'host.user': opponentData.id },
+          { 'opponent.user': user.id }
+        ]
+      }],
+      'completed': false
+    });
 
-    exists(game, 'game', opponent)
+    exists(game, 'game', opponent);
 
     return {
-        roomId: `${game.host.user}-${game.opponent.user}`,
-        ...game
+      roomId: `${game.host.user}-${game.opponent.user}`,
+      ...game
     };
   })
 );

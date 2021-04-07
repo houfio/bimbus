@@ -120,8 +120,8 @@ import { wordsRoute } from '../words';
 export const dictionaryRoute = route('/:slug', wordsRoute)(
   withAuthentication(),
   withQueryData(GetDictionary),
-  withUserData(),
-  withDictionaryData(),
+  withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
+  withDictionaryData((ctx) => [ctx.query.slug, ctx.user]),
   withResponse('get', ({ dictionary }) => dictionary),
   withResponse('delete', async ({ dictionary }) => {
     await dictionary.delete();

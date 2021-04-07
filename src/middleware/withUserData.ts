@@ -6,22 +6,21 @@ import { User } from '../models/User';
 import { ModelType } from '../types';
 import { middleware } from '../utils/middleware';
 
-type Input<K extends string, V extends boolean> = {
-  [T in K]: { username: string }
-} & (V extends false ? {} : {
-  currentUser: ModelType<typeof User>
-});
-type Output = {
+type DefaultOutput<I> = I & {
   user: ModelType<typeof User>
 };
 
-export function withUserData<T extends Input<K, V>, K extends string = 'query', V extends boolean = true>(validate?: V, from?: K) {
-  return middleware<T, T & Output>(async (value) => {
-    const username = value[from ?? 'query' as keyof typeof value].username;
+export function withUserData<I, V extends boolean = true, O = DefaultOutput<I>>(
+  get: (ctx: I) => V extends true ? [string, ModelType<typeof User>] : string,
+  set: (value: ModelType<typeof User>, ctx: I) => O
+    = (value, ctx) => ({ ...ctx, user: value }) as any,
+  validate?: V
+) {
+  return middleware<I, O>(async (ctx) => {
+    const values = get(ctx);
+    const [username, currentUser] = typeof values === 'string' ? [values, undefined] : values;
 
-    if (validate) {
-      const currentUser = (value as any).currentUser;
-
+    if (validate && currentUser instanceof User) {
       or(() => current(currentUser, username), () => role(currentUser, 'admin'));
     }
 
@@ -29,9 +28,6 @@ export function withUserData<T extends Input<K, V>, K extends string = 'query', 
 
     exists(user, 'user', username);
 
-    return {
-      ...value,
-      user
-    };
+    return set(user, ctx);
   });
 }
