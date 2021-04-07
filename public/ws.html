@@ -2,111 +2,152 @@
 <html>
   <head>
     <title>Bimbus</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-  <body>
-
-  <div class="container">
-    <div class="row">
-      <div class="col-6">
-        <div id="connectPart">
-          <div class="form-group">
-            <label for="bearerToken">Token</label>
-            <input type="text" class="form-control" id="bearerToken" placeholder="Bearer token">
-            <small class="form-text text-muted">Use JWT token used for authentication with API.</small>
-          </div>
-          <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" class="form-control" id="username" placeholder="username">
-            <small class="form-text text-muted">Your username.</small>
-          </div>
-          <div class="form-group">
-            <label for="opponent">Opponent</label>
-            <input type="text" class="form-control" id="opponent" placeholder="opponent">
-            <small class="form-text text-muted">Opponent username.</small>
-          </div>
-          <button id="connectButton" class="btn btn-primary">Connect</button>
-        </div>
-
-        <div id="guessPart" style="display: none; overflow-y: scroll; max-height: 100vh;">
-          <div class="form-group">
-            <label for="guess">Guess</label>
-            <input type="text" class="form-control" id="guess" placeholder="Guess the word">
-          </div>
-          <button id="guessButton" class="btn btn-primary">Guess</button>
-        </div>
-      </div>
-      <div class="col-6" id="log"></div>
-    </div>
-  </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
-    <script>
-      document.getElementById('connectButton').onclick = async event => {
-        const username = document.getElementById('username').value;
-        const opponent = document.getElementById('opponent').value;
-        const bearer = document.getElementById('bearerToken').value;
-
-        const data = await fetch(`http://localhost:8000/users/${username}/games/${opponent}`, {
-          method: 'GET',
-          headers: new Headers({
-            'Authorization': `bearer ${bearer}`
-          })
-        }).then(response => response.json());
-
-        console.log(data);
-        if (!data.status.success) {
-          log("CLIENT", "No active game found via API...")
-        } else {
-          connectSocket(data.data.roomId, bearer)
-        }
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"/>
+    <style>
+      .part {
+        overflow-y: auto;
+        height: calc(100vh - 3rem);
       }
 
-      log("CLIENT", "Please enter bearer token and click connect...")
+      .hide {
+        display: none;
+      }
 
-      function connectSocket(gameid, bearer) {
+      .log {
+        color: white;
+        background-color: black;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row my-4">
+        <div class="col-6">
+          <div id="connectPart" class="part hide">
+            <div class="form-group">
+              <label for="token">Token</label>
+              <input type="text" class="form-control" id="token" required>
+              <small class="form-text text-muted">The JWT token used for authentication</small>
+            </div>
+            <div class="form-group">
+              <label for="username">Username</label>
+              <input type="text" class="form-control" id="username" required/>
+            </div>
+            <div class="form-group">
+              <label for="opponent">Opponent</label>
+              <input type="text" class="form-control" id="opponent" required/>
+            </div>
+            <button id="connectButton" class="btn btn-primary">Connect</button>
+          </div>
+          <div id="guessPart" class="part hide">
+            <div class="form-group">
+              <label for="guess">Guess</label>
+              <input type="text" class="form-control" id="guess" placeholder="Guess the word">
+            </div>
+            <button id="guessButton" class="btn btn-primary">Guess</button>
+            <button id="disconnectButton" class="btn btn-secondary">Disconnect</button>
+          </div>
+        </div>
+        <div class="col-6 py-3 rounded part log" id="log"></div>
+      </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>
+    <script>
+      const connectPart = document.getElementById('connectPart');
+      const guessPart = document.getElementById('guessPart');
+      let oldSocket;
+
+      function openConnectPart() {
+        connectPart.classList.remove('hide');
+        guessPart.classList.add('hide');
+
+        log('CLIENT', 'Please enter token and click connect...');
+
+        document.getElementById('connectButton').onclick = async function () {
+          this.disabled = true;
+
+          const token = document.getElementById('token').value;
+          const username = document.getElementById('username').value;
+          const opponent = document.getElementById('opponent').value;
+
+          const data = await fetch(`http://localhost:8000/users/${username}/games/${opponent}`, {
+            method: 'GET',
+            headers: new Headers({
+              'Authorization': `Bearer ${token}`
+            })
+          }).then(response => response.json());
+
+          if (!data.status.success) {
+            log('CLIENT', 'No active game found via API...');
+          } else {
+            oldSocket = createSocket(data.data.roomId, token);
+          }
+
+          this.disabled = false;
+        };
+      }
+
+      function openGuessPart() {
+        connectPart.classList.add('hide');
+        guessPart.classList.remove('hide');
+
+        log('CLIENT', 'Allowing user to guess...');
+
+        document.getElementById('disconnectButton').onclick = function () {
+          oldSocket.disconnect();
+        };
+      }
+
+      function createSocket(id, token) {
         const socket = io({
           auth: {
-            token: `Bearer ${bearer}`
+            token: `Bearer ${token}`
           }
         });
 
-        socket.on("connect", () => {
-          log("SERVER", "Connected to server!")
+        socket.on('connect', () => {
+          log('SERVER', 'Connected to server!');
+          log('CLIENT', 'Sending game information to server...');
 
-          log("CLIENT", "Sending game information to server...")
-          socket.emit("roomInit", gameid)
+          socket.emit('roomInit', id);
         });
 
-        socket.on("roomInitResponse", data => {
+        socket.on('roomInitResponse', (data) => {
           if (data === true) {
-            log("SERVER", "Game found")
-            log("CLIENT", "Allowing user to guess...")
-            document.getElementById('connectPart').style.display = "none";
-            document.getElementById('guessPart').style.display = "block";
+            log('SERVER', 'Game found');
+
+            openGuessPart();
           } else {
-            log("SERVER", "Game not found")
+            log('SERVER', 'Game not found');
           }
-        })
-
-        socket.on("userJoined", data => {
-          log("SERVER", `User ${data} joined!`)
-        })
-
-        socket.on("message", data => {
-          log("SERVER", data)
         });
 
-        socket.on("disconnect", () => {
-          document.getElementById('connectPart').style.display = "block";
-          document.getElementById('guessPart').style.display = "none";
-        })
+        socket.on('userJoined', (data) => {
+          log('SERVER', `User ${data} joined!`);
+        });
+
+        socket.on('message', (data) => {
+          log('SERVER', data);
+        });
+
+        socket.on('disconnect', () => {
+          openConnectPart();
+        });
+
+        return socket;
       }
 
       function log(from, msg) {
-        const br = document.createElement('br');
-        document.getElementById('log').append(`[${new Date().getHours()}:${new Date().getMinutes()}] ${from}: ${msg}`)
-        document.getElementById('log').append(br)
+        const date = new Date();
+
+        document.getElementById('log').prepend(
+          `[${date.getHours()}:${date.getMinutes()}:${date.getMilliseconds()}] [${from}] ${msg}`,
+          document.createElement('br')
+        );
       }
+
+      openConnectPart();
     </script>
   </body>
 </html>

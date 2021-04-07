@@ -3,8 +3,6 @@ import { Socket } from 'socket.io';
 import { Game } from '../models/Game';
 import { User } from '../models/User';
 
-import { roomInit } from './roomInit';
-
 export const socketConnect = async (socket: Socket) => {
   console.log(`User ${socket.user} connected`);
 
