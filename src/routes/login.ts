@@ -68,7 +68,7 @@ import { route } from '../utils/route';
  */
 export const loginRoute = route('/login')(
   withBodyData(Authenticate),
-  withUserData((ctx) => ctx.body.username, undefined, false),
+  withUserData((ctx) => ctx.body.username),
   withResponse('post', ({ body: { username, password }, user }) => {
     if (password !== user.password) {
       throw new AuthenticationError();

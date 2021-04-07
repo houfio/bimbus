@@ -10,17 +10,16 @@ type DefaultOutput<I> = I & {
   user: ModelType<typeof User>
 };
 
-export function withUserData<I, V extends boolean = true, O = DefaultOutput<I>>(
-  get: (ctx: I) => V extends true ? [string, ModelType<typeof User>] : string,
+export function withUserData<I, O = DefaultOutput<I>>(
+  get: (ctx: I) => string | [string, ModelType<typeof User>],
   set: (value: ModelType<typeof User>, ctx: I) => O
-    = (value, ctx) => ({ ...ctx, user: value }) as any,
-  validate?: V
+    = (value, ctx) => ({ ...ctx, user: value }) as any
 ) {
   return middleware<I, O>(async (ctx) => {
     const values = get(ctx);
     const [username, currentUser] = typeof values === 'string' ? [values, undefined] : values;
 
-    if (validate && currentUser instanceof User) {
+    if (currentUser) {
       or(() => current(currentUser, username), () => role(currentUser, 'admin'));
     }
 

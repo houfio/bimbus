@@ -130,7 +130,7 @@ export const gamesRoute = route('/games', gameRoute)(
     limit: pagination.size
   })),
   withBodyData(CreateGame),
-  withUserData((ctx) => ctx.body.opponent, (value, ctx) => ({ ...ctx, opponent: value }), false),
+  withUserData((ctx) => ctx.body.opponent, (value, ctx) => ({ ...ctx, opponent: value })),
   withDictionaryData((ctx) => [ctx.body.dictionary, ctx.user]),
   withResponse('post', async ({ user, opponent, dictionary }) => {
     if (user.username === opponent.username) {
