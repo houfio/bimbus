@@ -57,12 +57,28 @@ export const gameRoute = route('/:opponent')(
 
     exists(opponentData, 'user', opponent);
 
-    const game = await Game.findOne({'host.user': user.id, 'opponent.user': opponentData.id, 'completed': false})
+    const game = await Game.findOne({
+        $or: [
+            {
+                $and: [
+                    { 'host.user': user.id },
+                    { 'opponent.user': opponentData.id }
+                ]
+            },
+            {
+                $and: [
+                    { 'host.user': opponentData.id },
+                    { 'opponent.user': user.id }
+                ]
+            }
+        ],
+        'completed': false
+    })
 
     exists(game, 'game', opponent)
 
     return {
-        roomId: `${user.id}-${opponentData.id}`,
+        roomId: `${game.host.user}-${game.opponent.user}`,
         ...game
     };
   })

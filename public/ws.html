@@ -27,7 +27,7 @@
           <button id="connectButton" class="btn btn-primary">Connect</button>
         </div>
 
-        <div id="guessPart" style="display: none;">
+        <div id="guessPart" style="display: none; overflow-y: scroll; max-height: 100vh;">
           <div class="form-group">
             <label for="guess">Guess</label>
             <input type="text" class="form-control" id="guess" placeholder="Guess the word">
@@ -88,9 +88,18 @@
           }
         })
 
+        socket.on("userJoined", data => {
+          log("SERVER", `User ${data} joined!`)
+        })
+
         socket.on("message", data => {
           log("SERVER", data)
         });
+
+        socket.on("disconnect", () => {
+          document.getElementById('connectPart').style.display = "block";
+          document.getElementById('guessPart').style.display = "none";
+        })
       }
 
       function log(from, msg) {
