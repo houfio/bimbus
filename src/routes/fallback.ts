@@ -95,6 +95,14 @@ import { route } from '../utils/route';
  *       schema:
  *         type: integer
  *       description: The size of a page
+ *     include:
+ *       in: query
+ *       name: include
+ *       schema:
+ *         type: array
+ *         items:
+ *           type: string
+ *       description: The top-level properties to include
  *   responses:
  *     200:
  *       description: Successful operation

@@ -15,6 +15,8 @@ import { userRoute } from './user';
 /**
  * @openapi
  * /users:
+ *   parameters:
+ *     - $ref: '#/components/parameters/include'
  *   get:
  *     summary: Get all users
  *     tags:

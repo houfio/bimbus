@@ -16,6 +16,7 @@ import { wordRoute } from './word';
  *   parameters:
  *     - $ref: '#/components/parameters/username'
  *     - $ref: '#/components/parameters/slug'
+ *     - $ref: '#/components/parameters/include'
  *   get:
  *     summary: Get all words
  *     tags:

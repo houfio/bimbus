@@ -20,6 +20,7 @@ import { dictionaryRoute } from './dictionary';
  * /users/{username}/dictionaries:
  *   parameters:
  *     - $ref: '#/components/parameters/username'
+ *     - $ref: '#/components/parameters/include'
  *   get:
  *     summary: Get all dictionaries
  *     tags:

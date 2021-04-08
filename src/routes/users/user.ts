@@ -14,6 +14,7 @@ import { gamesRoute } from '../games';
  * /users/{username}:
  *   parameters:
  *     - $ref: '#/components/parameters/username'
+ *     - $ref: '#/components/parameters/include'
  *   get:
  *     summary: Get a user
  *     tags:

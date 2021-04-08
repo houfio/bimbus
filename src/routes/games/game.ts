@@ -12,6 +12,7 @@ import { route } from '../../utils/route';
  *   parameters:
  *     - $ref: '#/components/parameters/username'
  *     - $ref: '#/components/parameters/opponent'
+ *     - $ref: '#/components/parameters/include'
  *   get:
  *     summary: Get a game with an opponent
  *     tags:

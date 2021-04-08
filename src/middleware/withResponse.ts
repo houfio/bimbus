@@ -10,9 +10,9 @@ export function withResponse<I>(method: Method, handler: MiddlewareHandler<I, ob
     const response = await handler(ctx, req);
 
     if (!Array.isArray(response) && (response as any).page) {
-      return paginated(response as PaginateResult<unknown>);
+      return paginated(req, response as PaginateResult<unknown>);
     }
 
-    return serialize(response) as any;
+    return serialize(req, response) as any;
   }, method);
 }

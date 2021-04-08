@@ -14,6 +14,7 @@ import { route } from '../../utils/route';
  *     - $ref: '#/components/parameters/username'
  *     - $ref: '#/components/parameters/slug'
  *     - $ref: '#/components/parameters/word'
+ *     - $ref: '#/components/parameters/include'
  *   get:
  *     summary: Get a word
  *     tags:
