@@ -1,6 +1,9 @@
 {
   "name": "bimbus",
   "version": "1.0.0",
+  "engines": {
+    "npm": "7.x"
+  },
   "scripts": {
     "dev": "concurrently --raw npm:dev:*",
     "dev:start": "ts-node-dev --respawn --transpile-only src",
