@@ -38,7 +38,7 @@ async function main() {
     onAuthentication: async (decodedToken) => decodedToken
   }));
 
-  io.on('connection', socketConnect);
+  io.on('connection', (socket) => socketConnect(io, socket));
 
   await connect(database, {
     useNewUrlParser: true,

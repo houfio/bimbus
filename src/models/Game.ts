@@ -1,14 +1,18 @@
-import { Document, model, models, PaginateModel, Schema } from 'mongoose';
+import {Document, model, models, PaginateModel, Schema} from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
 import paginate from 'mongoose-paginate-v2';
 
-import { ModelType } from '../types';
+import {ModelType} from '../types';
 
-import { Dictionary } from './Dictionary';
-import { User } from './User';
+import {Dictionary} from './Dictionary';
+import {User} from './User';
 
 interface Game extends Document {
   dictionary: ModelType<typeof Dictionary>,
+  answers: {
+    word: string,
+    guesses: string[]
+  }[]
   host: {
     user: ModelType<typeof User>,
     score: Number
@@ -26,13 +30,23 @@ const schema = new Schema<Game>({
     required: true,
     autopopulate: true
   },
+  answers: {
+    type: [
+      {
+        word: String,
+        guesses: [String]
+      }
+    ],
+    required: true,
+    default: []
+  },
   completed: {
     type: Boolean,
     required: true,
     default: false,
     index: {
       unique: true,
-      partialFilterExpression: { completed: false }
+      partialFilterExpression: {completed: false}
     }
   },
   host: {
