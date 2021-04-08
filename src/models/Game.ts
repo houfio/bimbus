@@ -1,26 +1,50 @@
-import {Document, model, models, PaginateModel, Schema} from 'mongoose';
+import { Document, model, PaginateModel, Schema } from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
 import paginate from 'mongoose-paginate-v2';
 
-import {ModelType} from '../types';
+import { ModelType } from '../types';
 
-import {Dictionary} from './Dictionary';
-import {User} from './User';
+import { Dictionary } from './Dictionary';
+import { User } from './User';
+
+type Player = {
+  user: ModelType<typeof User>,
+  score: Number,
+  guesses: string[]
+};
 
 interface Game extends Document {
   dictionary: ModelType<typeof Dictionary>,
-  answers: {
-    word: string,
-    guesses: string[]
-  }[]
-  host: {
-    user: ModelType<typeof User>,
-    score: Number
-  },
-  opponent: {
-    user: ModelType<typeof User>,
-    score: Number
-  }
+  word: string,
+  completed: boolean,
+  host: Player,
+  opponent: Player
+}
+
+function player(validate: (game: Game, value: Schema.Types.ObjectId) => boolean = () => true) {
+  return {
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+      autopopulate: true,
+      validate: {
+        validator(this: Game, value: Schema.Types.ObjectId) {
+          return validate(this, value);
+        }
+      }
+    },
+    score: {
+      type: Number,
+      default: 0,
+      required: true
+    },
+    guesses: {
+      type: [String],
+      default: [],
+      required: true
+    }
+  };
 }
 
 const schema = new Schema<Game>({
@@ -30,15 +54,9 @@ const schema = new Schema<Game>({
     required: true,
     autopopulate: true
   },
-  answers: {
-    type: [
-      {
-        word: String,
-        guesses: [String]
-      }
-    ],
-    required: true,
-    default: []
+  word: {
+    type: String,
+    required: true
   },
   completed: {
     type: Boolean,
@@ -46,40 +64,13 @@ const schema = new Schema<Game>({
     default: false,
     index: {
       unique: true,
-      partialFilterExpression: {completed: false}
-    }
-  },
-  host: {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      autopopulate: true
-    },
-    score: {
-      type: Number,
-      default: 0,
-      required: true
-    }
-  },
-  opponent: {
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
-      autopopulate: true,
-      validate: {
-        validator(this: Game, value: Schema.Types.ObjectId) {
-          return this.host.user.toString() !== value.toString();
-        }
+      partialFilterExpression: {
+        completed: false
       }
-    },
-    score: {
-      type: Number,
-      default: 0,
-      required: true
     }
-  }
+  },
+  host: player(),
+  opponent: player((game, value) => game.host.user.toString() !== value.toString())
 }, {
   versionKey: false
 });
@@ -87,4 +78,4 @@ const schema = new Schema<Game>({
 schema.plugin(paginate as any);
 schema.plugin(autopopulate as any);
 
-export const Game = (models.Game || model('Game', schema)) as PaginateModel<Game>;
+export const Game = model('Game', schema) as PaginateModel<Game>;

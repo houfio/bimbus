@@ -54,7 +54,7 @@
     <script>
       const connectPart = document.getElementById('connectPart');
       const guessPart = document.getElementById('guessPart');
-      let oldSocket;
+      let socket;
 
       function openConnectPart() {
         connectPart.classList.remove('hide');
@@ -79,7 +79,7 @@
           if (!data.status.success) {
             log('CLIENT', 'No active game found via API...');
           } else {
-            oldSocket = createSocket(`${data.data.host}-${data.data.opponent}`, token);
+            socket = createSocket(`${data.data.host}-${data.data.opponent}`, token);
           }
 
           this.disabled = false;
@@ -93,56 +93,61 @@
         log('CLIENT', 'Allowing user to guess...');
 
         document.getElementById('disconnectButton').onclick = function () {
-          oldSocket.disconnect();
+          socket.disconnect();
         };
 
-        document.getElementById('guessButton').onclick = function() {
-          oldSocket.emit('guess', document.getElementById('guess').value)
-        }
+        document.getElementById('guessButton').onclick = function () {
+          const guess = document.getElementById('guess').value;
+
+          log('CLIENT', `Sending guess '${guess}'...`);
+
+          socket.emit('guess', guess);
+        };
       }
 
       function createSocket(id, token) {
-        const socket = io({
+        const s = io({
           auth: {
             token: `Bearer ${token}`
           }
         });
 
-        socket.on('connect', () => {
-          log('SERVER', 'Connected to server!');
-          log('CLIENT', 'Sending game information to server...');
+        s.on('connect', () => {
+          log('SERVER', 'Connected to server');
 
-          socket.emit('roomInit', id);
+          join(id);
         });
 
-        socket.on('roomInitResponse', (data) => {
-          if (data === true) {
-            log('SERVER', 'Game found');
-
-            openGuessPart();
-          } else {
-            log('SERVER', 'Game not found');
+        s.on('success', (data) => {
+          if (!data) {
+            return log('SERVER', 'Game not found');
           }
+
+          log('SERVER', 'Successfully joined game');
+
+          openGuessPart();
         });
 
-        socket.on('userJoined', (data) => {
-          log('SERVER', `User ${data} joined!`);
+        s.on('userJoined', (data) => {
+          log('SERVER', `User ${data} joined the room`);
         });
 
-        socket.on('message', (data) => {
+        s.on('message', (data) => {
           log('SERVER', data);
         });
 
-        socket.on('guess', (data) => {
-          log('SERVER', `Guess ${data} made...`);
-        })
-
-        socket.on('disconnect', () => {
-          socket.disconnect();
+        s.on('disconnect', () => {
+          s.disconnect();
           openConnectPart();
         });
 
-        return socket;
+        return s;
+      }
+
+      function join(id) {
+        log('CLIENT', 'Sending game information to server...');
+
+        socket.emit('join', id);
       }
 
       function log(from, msg) {
@@ -155,7 +160,7 @@
       }
 
       function pad(number) {
-        return String(number).padStart(2, '0')
+        return String(number).padStart(2, '0');
       }
 
       openConnectPart();

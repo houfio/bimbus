@@ -141,7 +141,8 @@ export const gamesRoute = route('/games', gameRoute)(
     return await Game.create({
       dictionary: dictionary._id,
       host: { user: user._id },
-      opponent: { user: opponent._id }
+      opponent: { user: opponent._id },
+      word: dictionary.words[Math.floor(Math.random() * dictionary.words.length)]
     });
   })
 );

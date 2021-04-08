@@ -1,8 +1,9 @@
-import {Server, Socket} from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
-import {Dictionary} from '../models/Dictionary';
 import { Game } from '../models/Game';
 import { User } from '../models/User';
+import { Username } from '../structs/refinements/Username';
+import { filter } from '../utils/filter';
 
 export const socketConnect = async (io: Server, socket: Socket) => {
   console.log(`User ${socket.user} connected`);
@@ -10,26 +11,22 @@ export const socketConnect = async (io: Server, socket: Socket) => {
   const user = await User.findOne({ username: socket.user });
 
   if (user == null) {
-    socket.disconnect(true);
-
-    return;
+    return socket.disconnect(true);
   }
 
-  socket.on('roomInit', async (data) => {
+  socket.on('join', async (data) => {
     const reject = () => {
-      socket.emit('roomInitResponse', false);
+      socket.emit('success', false);
       socket.disconnect();
     };
 
-    const regexResult = data.match(/^[a-zA-Z0-9_]{3,32}-[a-zA-Z0-9_]{3,32}$/);
+    const [hostUsername, opponentUsername] = data.split('-');
 
-    if (regexResult == null) {
+    if (!Username.is(hostUsername) || !Username.is(opponentUsername)) {
       return reject();
     }
 
-    const [hostUsername, opponentUsername] = data.split('-');
-
-    // TODO bruhh waar zijn m'n mooie middlewares?
+    // todo(lex): bruhh waar zijn m'n mooie middlewares?
     const host = await User.findOne({
       username: hostUsername
     });
@@ -44,87 +41,73 @@ export const socketConnect = async (io: Server, socket: Socket) => {
     const game = await Game.findOne({
       'host.user': host.id,
       'opponent.user': opponent.id,
-      'completed': false
+      completed: false
     });
 
     if (!game) {
       return reject();
     }
 
-    if (game.answers.length === 0) {
-      const dictionary = await Dictionary.findById(game.dictionary).exec();
-
-      if (!dictionary || dictionary.words.length === 0) {
-        return reject();
-      }
-
-      game.answers.push({
-        word: dictionary.words[Math.floor(Math.random() * dictionary.words.length)],
-        guesses: []
-      });
-      await game.save()
-    }
-
     socket.data.gameId = game._id;
     socket.data.roomId = data;
+
     socket.join(data);
     io.in(data).emit('userJoined', user.username);
-    socket.emit('roomInitResponse', true);
-    socket.emit('message', `The word is ${game.answers[game.answers.length - 1].word.length} characters long!`);
+
+    socket.emit('success', true);
+    socket.emit('message', `The word is ${game.word.length} characters long`);
   });
 
   socket.on('guess', async (guess) => {
-    if (socket.data.roomId == null || socket.data.gameId == null) {
+    const { roomId, gameId } = socket.data;
+
+    if (!roomId || !gameId) {
       return;
     }
 
-    const game = await Game.findById(socket.data.gameId).exec();
+    const game = await Game.findById(gameId);
 
     if (!game) {
       return;
     }
 
-    const answer = game.answers[game.answers.length - 1];
-
-    if (guess.length !== answer.word.length) {
-      io.in(socket.data.roomId).emit('message', `Invalid guess ${guess} given. Not same length as answer!`)
-      return;
+    if (guess.length !== game.word.length) {
+      return io.in(roomId).emit('message', `Invalid guess ${guess} given. (not same length as answer)`);
+    } else if (!game.dictionary.words.includes(guess)) {
+      return io.in(roomId).emit('message', `Invalid guess ${guess} given. (not in the selected dictionary)`);
     }
 
-    answer.guesses.push(guess);
+    const key = user.username === game.host.user.username ? 'host' : 'opponent';
+
+    game[key].guesses.push(guess);
     await game.save();
 
-    let revealedWord = '';
-    const revealedLetters: string[] = [];
+    const guesses = [...game.host.guesses, ...game.opponent.guesses];
+    const result = Array(game.word.length).fill('_');
+    const letters = game.word.split('');
+    const guessed = new Set<string>();
 
-    // Go through the word to add all GUESSED letters
-    for(let i = 0; i < answer.word.length; i++) {
-      answer.guesses.forEach((g) => {
-        if (g[i] === answer.word[i] && revealedWord[i] !== g[i]) {
-          revealedWord += answer.word[i];
+    for (const g of guesses) {
+      for (let i = 0; i < result.length; i++) {
+        const l = g[i];
+
+        if (l === game.word[i]) {
+          result[i] = l
+        } else if (letters.includes(l)) {
+          guessed.add(l)
         }
-      });
-
-      if(revealedWord.length !== i + 1) {
-        revealedWord += '_';
       }
     }
 
-    // Go through the word to add all letters in the wrong position
-    for(let i = 0; i < answer.word.length; i++) {
-      answer.guesses.forEach((g) => {
-        if (answer.word.includes(g[i]) && !revealedLetters.includes(g[i])) {
-          const amountInAnswer = (answer.word.split('').find((s) => s === g[i]) || []).length;
-          const amountInRevealed = (revealedWord.split('').find((s) => s === g[i]) || []).length;
-          if (amountInAnswer !== amountInRevealed + (revealedLetters.find((s) => s === g[i]) || []).length) {
-            revealedLetters.push(g[i]);
-          }
-        }
-      })
-    }
+    io.in(roomId).emit('message', `Client made guess ${guess}, resulting in: ${result.join('')}. Letters in wrong place: ${Array.from(guessed).join(', ')}`);
 
-    io.in(socket.data.roomId).emit('message', `Client made guess ${guess}, resulting in: ${revealedWord}. Letters in wrong place: ${revealedLetters.join(', ')}`)
-  })
+    if (!result.includes('_')) {
+      game.completed = true;
+      await game.save();
+
+      io.in(roomId).disconnectSockets(true);
+    }
+  });
 
   socket.on('disconnect', () => {
     console.log(`User ${socket.user} disconnected`);

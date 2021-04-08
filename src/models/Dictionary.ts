@@ -1,4 +1,4 @@
-import { Document, model, models, PaginateModel, Schema } from 'mongoose';
+import { Document, model, PaginateModel, Schema } from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
 import paginate from 'mongoose-paginate-v2';
 
@@ -54,4 +54,4 @@ const schema = new Schema<Dictionary>({
 schema.plugin(paginate as any);
 schema.plugin(autopopulate as any);
 
-export const Dictionary = (models.Dictionary || model('Dictionary', schema)) as PaginateModel<Dictionary>;
+export const Dictionary = model('Dictionary', schema) as PaginateModel<Dictionary>;
