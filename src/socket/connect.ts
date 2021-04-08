@@ -3,7 +3,7 @@ import { Server, Socket } from 'socket.io';
 import { Game } from '../models/Game';
 import { User } from '../models/User';
 import { Username } from '../structs/refinements/Username';
-import { filter } from '../utils/filter';
+import { compare } from '../utils/compare';
 
 export const socketConnect = async (io: Server, socket: Socket) => {
   console.log(`User ${socket.user} connected`);
@@ -58,7 +58,7 @@ export const socketConnect = async (io: Server, socket: Socket) => {
     socket.emit('message', `The word is ${game.word.length} characters long`);
   });
 
-  socket.on('guess', async (guess) => {
+  socket.on('guess', async (guess: string) => {
     const { roomId, gameId } = socket.data;
 
     if (!roomId || !gameId) {
@@ -72,9 +72,9 @@ export const socketConnect = async (io: Server, socket: Socket) => {
     }
 
     if (guess.length !== game.word.length) {
-      return io.in(roomId).emit('message', `Invalid guess ${guess} given. (not same length as answer)`);
+      return io.in(roomId).emit('message', `Invalid guess ${guess} (not same length as answer)`);
     } else if (!game.dictionary.words.includes(guess)) {
-      return io.in(roomId).emit('message', `Invalid guess ${guess} given. (not in the selected dictionary)`);
+      return io.in(roomId).emit('message', `Invalid guess ${guess} (not in the selected dictionary)`);
     }
 
     const key = user.username === game.host.user.username ? 'host' : 'opponent';
@@ -82,26 +82,9 @@ export const socketConnect = async (io: Server, socket: Socket) => {
     game[key].guesses.push(guess);
     await game.save();
 
-    const guesses = [...game.host.guesses, ...game.opponent.guesses];
-    const result = Array(game.word.length).fill('_');
-    const letters = game.word.split('');
-    const guessed = new Set<string>();
+    io.in(roomId).emit('message', `Result: ${compare(guess, game.word)}`);
 
-    for (const g of guesses) {
-      for (let i = 0; i < result.length; i++) {
-        const l = g[i];
-
-        if (l === game.word[i]) {
-          result[i] = l
-        } else if (letters.includes(l)) {
-          guessed.add(l)
-        }
-      }
-    }
-
-    io.in(roomId).emit('message', `Client made guess ${guess}, resulting in: ${result.join('')}. Letters in wrong place: ${Array.from(guessed).join(', ')}`);
-
-    if (!result.includes('_')) {
+    if (guess === game.word) {
       game.completed = true;
       await game.save();
 

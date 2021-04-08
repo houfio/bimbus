@@ -9,12 +9,15 @@
       }
 
       .log {
-        color: white;
+        height: calc(100vh - 3rem);
         background-color: black;
         font-family: monospace;
-
         overflow-y: auto;
-        height: calc(100vh - 3rem);
+      }
+
+      .log pre {
+        margin-bottom: 0;
+        color: white;
       }
     </style>
   </head>
@@ -137,7 +140,6 @@
         });
 
         s.on('disconnect', () => {
-          s.disconnect();
           openConnectPart();
         });
 
@@ -152,11 +154,11 @@
 
       function log(from, msg) {
         const date = new Date();
+        const pre = document.createElement('pre');
 
-        document.getElementById('log').prepend(
-          `[${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}] [${from}] ${msg}`,
-          document.createElement('br')
-        );
+        pre.innerText = `[${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}] [${from}] ${msg}`;
+
+        document.getElementById('log').prepend(pre);
       }
 
       function pad(number) {
