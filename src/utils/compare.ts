@@ -9,8 +9,10 @@ export function compare(guess: string, word: string) {
         const matchedGuess = match(letter, arr);
         const matchedWord = match(letter, letters);
         const correct = matchedWord.filter((c) => matchedGuess.find(equals(c)));
+        const filtered = match(letter, arr, (_, ii) => !correct.find((c) => c.i === ii))
 
-        if (matchedGuess.length === matchedWord.length || i < matchedWord.length - correct.length) {
+        if (matchedGuess.length === matchedWord.length
+          || filtered.find((g) => g.i === i)!.ii < matchedWord.length - correct.length) {
           return `(${letter})`;
         }
       }
@@ -21,10 +23,11 @@ export function compare(guess: string, word: string) {
   return result.join('');
 }
 
-function match(letter: string, letters: string[]) {
+function match(letter: string, letters: string[], filter: (l: string, i: number) => boolean = (l) => l === letter) {
   return letters
     .map((l, i) => ({ l, i }))
-    .filter(({ l }) => l === letter);
+    .filter(({ l, i }) => filter(l, i))
+    .map(({ l, i }, ii) => ({ l, i, ii }));
 }
 
 function equals(a: any) {
