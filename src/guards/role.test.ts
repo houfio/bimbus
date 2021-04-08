@@ -1,3 +1,4 @@
+import { AuthorizationError } from '../errors/AuthorizationError';
 import { User } from '../models/User';
 import { ModelType } from '../types';
 
@@ -16,5 +17,5 @@ it('should pass when roles match', () => {
 });
 
 it('should throw an unauthorized error', () => {
-  expect(() => role(user, 'admin')).toThrow('Unauthorized');
+  expect(() => role(user, 'admin')).toThrow(AuthorizationError);
 });

@@ -1,3 +1,4 @@
+import { AuthorizationError } from '../errors/AuthorizationError';
 import { User } from '../models/User';
 import { ModelType } from '../types';
 
@@ -16,5 +17,5 @@ it('should not throw when the usernames match', () => {
 });
 
 it('should throw when the usernames don\'t match', () => {
-  expect(() => current(user, 'test2')).toThrow('Unauthorized');
+  expect(() => current(user, 'test2')).toThrow(AuthorizationError);
 });
