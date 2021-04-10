@@ -55,8 +55,13 @@ import { route } from '../../utils/route';
  *           type: string
  *           nullable: true
  *       required:
- *         - username
+ *         - host
  *         - opponent
+ *         - completed
+ *         - dictionary
+ *         - hostScore
+ *         - opponentScore
+ *         - word
  */
 export const gameRoute = route<AuthCtx>('/:opponent')(
   withQueryData(GetGame),

@@ -102,9 +102,7 @@ import { gameRoute } from './game';
  *                   - opponent
  *                   - completed
  *           required:
- *             - dictionary
- *             - host
- *             - opponent
+ *             - data
  *     createGame:
  *       type: object
  *       properties:
@@ -115,8 +113,9 @@ import { gameRoute } from './game';
  *         completed:
  *           type: boolean
  *       required:
- *         - dictionary
+ *         - host
  *         - opponent
+ *         - completed
  */
 export const gamesRoute = route<AuthCtx>('/games', gameRoute)(
   withQueryData(GetUser),
