@@ -1,3 +1,7 @@
+// tslint:disable-next-line:no-var-requires
+const mockingoose = require('mockingoose');
+import { Document } from 'mongoose';
+
 import { AuthenticationError } from '../errors/AuthenticationError';
 import { User } from '../models/User';
 
@@ -8,6 +12,8 @@ let old = {};
 beforeEach(() => {
   old = process.env;
   process.env = { SECRET: 'secret' };
+
+  mockingoose.resetAll();
 });
 
 afterEach(() => {
@@ -23,17 +29,15 @@ it('should fail when invalid headers are given', async () => {
 });
 
 it('should fail when the user is not found', async () => {
-  jest.spyOn(User, 'findOne')
-    .mockImplementationOnce(() => undefined!);
+  mockingoose(User)
+    .toReturn(undefined, 'findOne');
 
   await expect(auth({ authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.YWRtaW4.Hq25ihi_FB2DYnhkH9mO7z7nz67xPsE5IfFsUgDhbrU' })).rejects.toThrow(AuthenticationError);
 });
 
 it('should return the user on success', async () => {
-  jest.spyOn(User, 'findOne')
-    .mockImplementationOnce(() => ({ test: true }) as any);
+  mockingoose(User)
+    .toReturn({}, 'findOne');
 
-  await expect(auth({ authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.YWRtaW4.Hq25ihi_FB2DYnhkH9mO7z7nz67xPsE5IfFsUgDhbrU' })).resolves.toEqual({
-    test: true
-  });
+  await expect(auth({ authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.YWRtaW4.Hq25ihi_FB2DYnhkH9mO7z7nz67xPsE5IfFsUgDhbrU' })).resolves.toBeInstanceOf(Document);
 });

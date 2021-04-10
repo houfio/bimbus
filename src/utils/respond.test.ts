@@ -1,4 +1,5 @@
 import { xmlContent } from '../constants';
+import { MethodError } from '../errors/MethodError';
 
 import { respond } from './respond';
 
@@ -35,4 +36,29 @@ it('should respond with xml when requested', () => {
   respond(mockRequest(true), res, {});
 
   expect(res.setHeader).toHaveBeenCalledWith('Content-Type', xmlContent);
+});
+
+it('should unpack nested data', () => {
+  const res = mockResponse();
+
+  respond(mockRequest(), res, {
+    test: true,
+    data: {
+      test: true
+    }
+  });
+
+  expect(res.json).toHaveBeenCalledWith({
+    status: { code: 200, info: null, message: null, success: true },
+    test: true,
+    data: { test: true }
+  });
+});
+
+it('should add error headers', () => {
+  const res = mockResponse();
+
+  respond(mockRequest(), res, new MethodError(['get']));
+
+  expect(res.setHeader).toHaveBeenCalledWith('Allowed', 'GET');
 });
