@@ -17,6 +17,7 @@ const schema = new Schema<Dictionary>({
   slug: {
     type: String,
     required: true,
+    unique: true,
     validate: {
       validator: (value: unknown) => Slug.is(value)
     }
