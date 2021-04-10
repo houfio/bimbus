@@ -63,7 +63,7 @@
         connectPart.classList.remove('hide');
         guessPart.classList.add('hide');
 
-        log('CLIENT', 'Please enter token and click connect...');
+        log('UI', 'Opening auth part...');
 
         document.getElementById('connectButton').onclick = async function () {
           this.disabled = true;
@@ -82,6 +82,8 @@
           if (!data.status.success) {
             log('CLIENT', 'No active game found via API...');
           } else {
+            log('CLIENT', 'Connecting to server...');
+
             socket = createSocket(`${data.data.host}-${data.data.opponent}`, token);
           }
 
@@ -93,16 +95,18 @@
         connectPart.classList.add('hide');
         guessPart.classList.remove('hide');
 
-        log('CLIENT', 'Allowing user to guess...');
+        log('UI', 'Opening guess part...');
 
         document.getElementById('disconnectButton').onclick = function () {
+          log('CLIENT', 'Disconnecting from server...');
+
           socket.disconnect();
         };
 
         document.getElementById('guessButton').onclick = function () {
           const guess = document.getElementById('guess').value;
 
-          log('CLIENT', `Sending guess '${guess}'...`);
+          log('CLIENT', `Guessing '${guess}'...`);
 
           socket.emit('guess', guess);
         };
@@ -110,53 +114,30 @@
 
       function createSocket(id, token) {
         const s = io({
-          auth: {
-            token: `Bearer ${token}`
-          }
+          auth: { token: `Bearer ${token}` },
+          query: { id }
         });
 
         s.on('connect', () => {
           log('SERVER', 'Connected to server');
 
-          join(id);
-        });
-
-        s.on('success', (data) => {
-          if (!data) {
-            return log('SERVER', 'Game not found');
-          }
-
-          log('SERVER', 'Successfully joined game');
-
           openGuessPart();
         });
-
-        s.on('userJoined', (data) => {
-          log('SERVER', `User ${data} joined the room`);
-        });
-
-        s.on('message', (data) => {
-          log('SERVER', data);
-        });
-
         s.on('disconnect', () => {
+          log('SERVER', 'Disconnected from server');
+
           openConnectPart();
         });
+        s.on('message', (data) => log('SERVER', data));
 
         return s;
-      }
-
-      function join(id) {
-        log('CLIENT', 'Sending game information to server...');
-
-        socket.emit('join', id);
       }
 
       function log(from, msg) {
         const date = new Date();
         const pre = document.createElement('pre');
 
-        pre.innerText = `[${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}] [${from}] ${msg}`;
+        pre.innerText = `[${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}/${from}] ${msg}`;
 
         document.getElementById('log').prepend(pre);
       }

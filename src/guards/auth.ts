@@ -17,8 +17,6 @@ export async function auth(headers: IncomingHttpHeaders) {
 
   const user = await User.findOne({ username });
 
-  console.log(user);
-
   if (!user) {
     throw new AuthenticationError();
   }

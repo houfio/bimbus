@@ -4,6 +4,8 @@ const object: any = {
   dictionary: {
     slug: 'dictionary'
   },
+  completed: false,
+  word: 'test',
   host: {
     user: {
       username: 'host'
@@ -28,13 +30,15 @@ it('should populate the fields', () => {
   const serialized = gameSerializer(object);
 
   expect(serialized[0]).toEqual({
-    dictionary: 'dictionary',
     host: 'host',
-    opponent: 'opponent'
+    opponent: 'opponent',
+    completed: false
   });
 
   expect(serialized[1]).toEqual({
+    dictionary: 'dictionary',
     hostScore: 0,
-    opponentScore: 1
+    opponentScore: 1,
+    word: null
   });
 });

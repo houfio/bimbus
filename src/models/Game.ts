@@ -9,7 +9,7 @@ import { User } from './User';
 
 type Player = {
   user: ModelType<typeof User>,
-  score: Number,
+  score: number,
   guesses: string[]
 };
 

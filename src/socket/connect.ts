@@ -2,100 +2,54 @@ import { Server, Socket } from 'socket.io';
 
 import { Game } from '../models/Game';
 import { User } from '../models/User';
-import { Username } from '../structs/refinements/Username';
-import { compare } from '../utils/compare';
 
-export const socketConnect = async (io: Server, socket: Socket) => {
-  console.log(`User ${socket.user} connected`);
+import { guess } from './guess';
 
+export async function connect(io: Server, socket: Socket) {
+  const { id } = socket.handshake.query;
   const user = await User.findOne({ username: socket.user });
 
-  if (user == null) {
+  if (!user || typeof id !== 'string') {
     return socket.disconnect(true);
   }
 
-  socket.on('join', async (data) => {
-    const reject = () => {
-      socket.emit('success', false);
-      socket.disconnect();
-    };
+  const [hostUsername, opponentUsername] = id.split('-');
 
-    const [hostUsername, opponentUsername] = data.split('-');
+  if (user.role !== 'admin' && hostUsername !== user.username && opponentUsername !== user.username) {
+    return socket.disconnect(true);
+  }
 
-    if (!Username.is(hostUsername) || !Username.is(opponentUsername)) {
-      return reject();
-    }
+  const host = await User.findOne({ username: hostUsername });
+  const opponent = await User.findOne({ username: opponentUsername });
 
-    // todo(lex): bruhh waar zijn m'n mooie middlewares?
-    const host = await User.findOne({
-      username: hostUsername
-    });
-    const opponent = await User.findOne({
-      username: opponentUsername
-    });
+  if (!host || !opponent) {
+    return socket.disconnect(true);
+  }
 
-    if (!host || !opponent) {
-      return reject();
-    }
-
-    const game = await Game.findOne({
-      'host.user': host.id,
-      'opponent.user': opponent.id,
-      completed: false
-    });
-
-    if (!game) {
-      return reject();
-    }
-
-    socket.data.gameId = game._id;
-    socket.data.roomId = data;
-
-    socket.join(data);
-    io.in(data).emit('userJoined', user.username);
-
-    socket.emit('success', true);
-    socket.emit('message', `The word is ${game.word.length} characters long`);
+  const game = await Game.findOne({
+    'host.user': host.id,
+    'opponent.user': opponent.id,
+    completed: false
   });
 
-  socket.on('guess', async (guess: string) => {
-    const { roomId, gameId } = socket.data;
+  if (!game) {
+    return socket.disconnect(true);
+  }
 
-    if (!roomId || !gameId) {
-      return;
+  socket.join(id);
+  socket.emit('message', `The word is ${game.word.length} characters long`);
+
+  const room = io.in(id);
+
+  console.log(`${socket.user} connected to ${id}`);
+  room.emit('message', `${user.username} joined the game`);
+
+  socket.on('disconnect', () => console.log(`${socket.user} disconnected from ${id}`));
+  socket.on('guess', (word: string) => {
+    if (io.sockets.adapter.rooms.get(id)?.size !== 2) {
+      return room.emit('message', 'Please wait for all users to connect');
     }
 
-    const game = await Game.findById(gameId);
-
-    if (!game) {
-      return;
-    }
-
-    if (guess.length !== game.word.length) {
-      return io.in(roomId).emit('message', `Invalid guess ${guess} (not same length as answer)`);
-    } else if (!game.dictionary.words.includes(guess)) {
-      return io.in(roomId).emit('message', `Invalid guess ${guess} (not in the selected dictionary)`);
-    }
-
-    const key = user.username === game.host.user.username ? 'host' : 'opponent';
-
-    game[key].guesses.push(guess);
-    await game.save();
-
-    io.in(roomId).emit('message', `Result: ${compare(guess, game.word)}`);
-
-    if (guess === game.word) {
-      game.completed = true;
-      await game.save();
-
-      io.in(roomId).disconnectSockets(true);
-    }
+    return guess(room, socket, user, game.id, word)
   });
-
-  socket.on('disconnect', () => {
-    console.log(`User ${socket.user} disconnected`);
-  });
-};
-
-
-
+}

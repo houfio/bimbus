@@ -8,7 +8,7 @@ import swaggerSpec from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
 import { indexRoute } from './routes';
-import { socketConnect } from './socket/connect';
+import { connect as socketConnect } from './socket/connect';
 import { respond } from './utils/respond';
 
 async function main() {
