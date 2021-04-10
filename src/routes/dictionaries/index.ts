@@ -1,6 +1,5 @@
 import slugify from 'slugify';
 
-import { withAuthentication } from '../../middleware/withAuthorization';
 import { withBodyData } from '../../middleware/withBodyData';
 import { withQueryData } from '../../middleware/withQueryData';
 import { withResponse } from '../../middleware/withResponse';
@@ -10,6 +9,7 @@ import { CreateDictionary } from '../../structs/CreateDictionary';
 import { DictionaryFilters } from '../../structs/filters/DictionaryFilters';
 import { PaginationFilters } from '../../structs/filters/PaginationFilters';
 import { GetUser } from '../../structs/GetUser';
+import { AuthCtx } from '../../types';
 import { filter } from '../../utils/filter';
 import { route } from '../../utils/route';
 
@@ -124,8 +124,7 @@ import { dictionaryRoute } from './dictionary';
  *         - language
  *         - public
  */
-export const dictionariesRoute = route('/dictionaries', dictionaryRoute)(
-  withAuthentication(),
+export const dictionariesRoute = route<AuthCtx>('/dictionaries', dictionaryRoute)(
   withQueryData(GetUser),
   withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
   withQueryData(DictionaryFilters, (value, ctx) => ({ ...ctx, filters: value })),

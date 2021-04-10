@@ -2,23 +2,25 @@ import { Request, Router } from 'express';
 import { Document, Model } from 'mongoose';
 import { Server } from 'socket.io';
 
-export type RouteHandler = {
+import { User } from './models/User';
+
+export type RouteHandler<A> = {
   (): Route,
-  (a: Middleware<{}>): Route,
-  <A>(a: Middleware<{}, A>, b: Middleware<A>): Route,
-  <A, B>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B>): Route,
-  <A, B, C>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C>): Route,
-  <A, B, C, D>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D>): Route,
-  <A, B, C, D, E>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E>): Route,
-  <A, B, C, D, E, F>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F>): Route,
-  <A, B, C, D, E, F, G>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F, G>, h: Middleware<G>): Route,
-  <A, B, C, D, E, F, G, H>(a: Middleware<{}, A>, b: Middleware<A, B>, c: Middleware<B, C>, d: Middleware<C, D>, e: Middleware<D, E>, f: Middleware<E, F>, g: Middleware<F, G>, h: Middleware<G, H>, i: Middleware<H>): Route
+  (a: Middleware<A>): Route,
+  <B>(a: Middleware<A, B>, b: Middleware<B>): Route,
+  <B, C>(a: Middleware<A, B>, b: Middleware<B, C>, c: Middleware<C>): Route,
+  <B, C, D>(a: Middleware<A, B>, b: Middleware<B, C>, c: Middleware<C, D>, d: Middleware<D>): Route,
+  <B, C, D, E>(a: Middleware<A, B>, b: Middleware<B, C>, c: Middleware<C, D>, d: Middleware<D, E>, e: Middleware<E>): Route,
+  <B, C, D, E, F>(a: Middleware<A, B>, b: Middleware<B, C>, c: Middleware<C, D>, d: Middleware<D, E>, e: Middleware<E, F>, f: Middleware<F>): Route,
+  <B, C, D, E, F, G>(a: Middleware<A, B>, b: Middleware<B, C>, c: Middleware<C, D>, d: Middleware<D, E>, e: Middleware<E, F>, f: Middleware<F, G>, g: Middleware<G>): Route,
+  <B, C, D, E, F, G, H>(a: Middleware<A, B>, b: Middleware<B, C>, c: Middleware<C, D>, d: Middleware<D, E>, e: Middleware<E, F>, f: Middleware<F, G>, g: Middleware<G, H>, h: Middleware<H>): Route,
+  <B, C, D, E, F, G, H, I>(a: Middleware<A, B>, b: Middleware<B, C>, c: Middleware<C, D>, d: Middleware<D, E>, e: Middleware<E, F>, f: Middleware<F, G>, g: Middleware<G, H>, h: Middleware<H, I>, i: Middleware<I>): Route
 };
 export type Route = {
   (io: Server): Router,
   path: string
 };
-export type Method = 'all' | 'get' | 'post' | 'put' | 'delete';
+export type Method = 'all' | 'use' | 'get' | 'post' | 'put' | 'delete';
 export type MiddlewareHandler<A, B> = (ctx: A, req: Request) => B | Promise<B>;
 export type Middleware<A, B = unknown> = MiddlewareHandler<A, B> & {
   method: Method
@@ -35,4 +37,8 @@ export type ModelType<T> = T extends Model<infer V> ? V : never;
 export type Token = {
   letter: string,
   index: number
+};
+
+export type AuthCtx = {
+  currentUser: ModelType<typeof User>
 };

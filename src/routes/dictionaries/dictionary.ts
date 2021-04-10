@@ -1,4 +1,3 @@
-import { withAuthentication } from '../../middleware/withAuthorization';
 import { withBodyData } from '../../middleware/withBodyData';
 import { withDictionaryData } from '../../middleware/withDictionaryData';
 import { withQueryData } from '../../middleware/withQueryData';
@@ -7,6 +6,7 @@ import { withUserData } from '../../middleware/withUserData';
 import { Game } from '../../models/Game';
 import { GetDictionary } from '../../structs/GetDictionary';
 import { UpdateDictionary } from '../../structs/UpdateDictionary';
+import { AuthCtx } from '../../types';
 import { route } from '../../utils/route';
 import { wordsRoute } from '../words';
 
@@ -119,8 +119,7 @@ import { wordsRoute } from '../words';
  *           required:
  *             - data
  */
-export const dictionaryRoute = route('/:slug', wordsRoute)(
-  withAuthentication(),
+export const dictionaryRoute = route<AuthCtx>('/:slug', wordsRoute)(
   withQueryData(GetDictionary),
   withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
   withDictionaryData((ctx) => [ctx.query.slug, ctx.user]),

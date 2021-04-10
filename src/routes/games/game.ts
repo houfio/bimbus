@@ -1,9 +1,9 @@
-import { withAuthentication } from '../../middleware/withAuthorization';
 import { withGameData } from '../../middleware/withGameData';
 import { withQueryData } from '../../middleware/withQueryData';
 import { withResponse } from '../../middleware/withResponse';
 import { withUserData } from '../../middleware/withUserData';
 import { GetGame } from '../../structs/GetGame';
+import { AuthCtx } from '../../types';
 import { route } from '../../utils/route';
 
 /**
@@ -47,8 +47,7 @@ import { route } from '../../utils/route';
  *         - username
  *         - opponent
  */
-export const gameRoute = route('/:opponent')(
-  withAuthentication(),
+export const gameRoute = route<AuthCtx>('/:opponent')(
   withQueryData(GetGame),
   withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
   withUserData((ctx) => ctx.query.opponent, (value, ctx) => ({ ...ctx, opponent: value })),

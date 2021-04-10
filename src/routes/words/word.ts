@@ -1,10 +1,10 @@
 import { exists } from '../../guards/exists';
-import { withAuthentication } from '../../middleware/withAuthorization';
 import { withDictionaryData } from '../../middleware/withDictionaryData';
 import { withQueryData } from '../../middleware/withQueryData';
 import { withResponse } from '../../middleware/withResponse';
 import { withUserData } from '../../middleware/withUserData';
 import { GetWord } from '../../structs/GetWord';
+import { AuthCtx } from '../../types';
 import { route } from '../../utils/route';
 
 /**
@@ -79,8 +79,7 @@ import { route } from '../../utils/route';
  *           required:
  *             - data
  */
-export const wordRoute = route('/:word')(
-  withAuthentication(),
+export const wordRoute = route<AuthCtx>('/:word')(
   withQueryData(GetWord),
   withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
   withDictionaryData((ctx) => [ctx.query.slug, ctx.user]),

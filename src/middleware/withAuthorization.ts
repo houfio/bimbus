@@ -8,8 +8,9 @@ type DefaultOutput<I> = I & {
 };
 
 export function withAuthentication<I, O = DefaultOutput<I>>(
+  passthrough = false,
   set: (value: ModelType<typeof User>, ctx: I) => O
     = (value, ctx) => ({ ...ctx, currentUser: value }) as any
 ) {
-  return middleware<I, O>(async (ctx, { headers }) => set(await auth(headers), ctx));
+  return middleware<I, O>(async (ctx, { headers }) => set(await auth(headers), ctx), passthrough ? 'use' : 'all');
 }

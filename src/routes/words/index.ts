@@ -1,4 +1,3 @@
-import { withAuthentication } from '../../middleware/withAuthorization';
 import { withBodyData } from '../../middleware/withBodyData';
 import { withDictionaryData } from '../../middleware/withDictionaryData';
 import { withQueryData } from '../../middleware/withQueryData';
@@ -6,6 +5,7 @@ import { withResponse } from '../../middleware/withResponse';
 import { withUserData } from '../../middleware/withUserData';
 import { CreateWord } from '../../structs/CreateWord';
 import { GetDictionary } from '../../structs/GetDictionary';
+import { AuthCtx } from '../../types';
 import { route } from '../../utils/route';
 
 import { wordRoute } from './word';
@@ -89,8 +89,7 @@ import { wordRoute } from './word';
  *       required:
  *         - word
  */
-export const wordsRoute = route('/words', wordRoute)(
-  withAuthentication(),
+export const wordsRoute = route<AuthCtx>('/words', wordRoute)(
   withQueryData(GetDictionary),
   withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
   withDictionaryData((ctx) => [ctx.query.slug, ctx.user]),

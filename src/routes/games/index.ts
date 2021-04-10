@@ -1,5 +1,4 @@
 import { HttpError } from '../../errors/HttpError';
-import { withAuthentication } from '../../middleware/withAuthorization';
 import { withBodyData } from '../../middleware/withBodyData';
 import { withDictionaryData } from '../../middleware/withDictionaryData';
 import { withQueryData } from '../../middleware/withQueryData';
@@ -9,6 +8,7 @@ import { Game } from '../../models/Game';
 import { CreateGame } from '../../structs/CreateGame';
 import { PaginationFilters } from '../../structs/filters/PaginationFilters';
 import { GetUser } from '../../structs/GetUser';
+import { AuthCtx } from '../../types';
 import { route } from '../../utils/route';
 
 import { gameRoute } from './game';
@@ -116,8 +116,7 @@ import { gameRoute } from './game';
  *         - dictionary
  *         - opponent
  */
-export const gamesRoute = route('/games', gameRoute)(
-  withAuthentication(),
+export const gamesRoute = route<AuthCtx>('/games', gameRoute)(
   withQueryData(GetUser),
   withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
   withQueryData(PaginationFilters, (value, ctx) => ({ ...ctx, pagination: value })),

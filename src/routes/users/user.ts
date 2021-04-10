@@ -132,7 +132,7 @@ import { gamesRoute } from '../games';
  *         - email
  */
 export const userRoute = route('/:username', dictionariesRoute, gamesRoute)(
-  withAuthentication(),
+  withAuthentication(true),
   withQueryData(GetUser),
   withUserData((ctx) => [ctx.query.username, ctx.currentUser]),
   withResponse('get', ({ user }) => user),
