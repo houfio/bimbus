@@ -31,3 +31,8 @@ export type Serializer<T extends Document> = SerializerHandler<T> & {
 
 export type Role = 'user' | 'admin';
 export type ModelType<T> = T extends Model<infer V> ? V : never;
+
+export type Token = {
+  letter: string,
+  index: number
+};
