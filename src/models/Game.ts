@@ -82,7 +82,7 @@ schema.pre('save', function (next) {
     } else {
       next();
     }
-  })
+  });
 });
 
 schema.plugin(paginate as any);

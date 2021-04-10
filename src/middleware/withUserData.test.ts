@@ -11,7 +11,7 @@ import { withUserData } from './withUserData';
 const mockCall = (
   data: string | [string, ModelType<typeof User>],
   set?: (value: object) => object
-) => withUserData(() => data, set)({}, undefined!)
+) => withUserData(() => data, set)({}, undefined!);
 
 beforeEach(() => {
   mockingoose.resetAll();

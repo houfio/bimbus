@@ -1,11 +1,9 @@
 import { auth } from '../guards/auth';
 import { User } from '../models/User';
-import { ModelType } from '../types';
+import { AuthCtx, ModelType } from '../types';
 import { middleware } from '../utils/middleware';
 
-type DefaultOutput<I> = I & {
-  currentUser: ModelType<typeof User>
-};
+type DefaultOutput<I> = I & AuthCtx;
 
 export function withAuthentication<I, O = DefaultOutput<I>>(
   passthrough = false,

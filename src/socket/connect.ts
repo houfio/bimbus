@@ -58,6 +58,6 @@ export async function connect(io: Server, socket: Socket) {
       return room.emit('message', 'Please wait for all users to connect');
     }
 
-    await guess(room, socket, user, g, word)
+    await guess(room, socket, user, g, word);
   });
 }

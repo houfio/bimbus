@@ -10,7 +10,7 @@ import { withGameData } from './withGameData';
 
 const mockCall = (user: ModelType<typeof User>) => withGameData(
   () => [user, user]
-)({}, {} as any)
+)({}, {} as any);
 
 beforeEach(() => {
   mockingoose.resetAll();
