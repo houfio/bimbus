@@ -30,19 +30,30 @@ import { route } from '../../utils/route';
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/getGame'
+ *               $ref: '#/components/schemas/game'
  *           application/xml:
  *             schema:
- *               $ref: '#/components/schemas/getGame'
+ *               $ref: '#/components/schemas/game'
  * components:
  *   schemas:
- *     getGame:
+ *     game:
  *       type: object
  *       properties:
- *         username:
+ *         host:
  *           type: string
  *         opponent:
  *           type: string
+ *         completed:
+ *           type: boolean
+ *         dictionary:
+ *           type: string
+ *         hostScore:
+ *           type: integer
+ *         opponentScore:
+ *           type: integer
+ *         word:
+ *           type: string
+ *           nullable: true
  *       required:
  *         - username
  *         - opponent

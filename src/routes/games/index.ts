@@ -91,16 +91,16 @@ import { gameRoute } from './game';
  *               items:
  *                 type: object
  *                 properties:
- *                   dictionary:
+ *                   host:
  *                     type: string
- *                   hostId:
+ *                   opponent:
  *                     type: string
- *                   opponentId:
- *                     type: string
+ *                   completed:
+ *                     type: boolean
  *                 required:
- *                   - dictionary
  *                   - host
  *                   - opponent
+ *                   - completed
  *           required:
  *             - dictionary
  *             - host
@@ -108,10 +108,12 @@ import { gameRoute } from './game';
  *     createGame:
  *       type: object
  *       properties:
- *         dictionary:
+ *         host:
  *           type: string
  *         opponent:
  *           type: string
+ *         completed:
+ *           type: boolean
  *       required:
  *         - dictionary
  *         - opponent

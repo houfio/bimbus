@@ -72,7 +72,7 @@
           const username = document.getElementById('username').value;
           const opponent = document.getElementById('opponent').value;
 
-          const data = await fetch(`http://localhost:8000/users/${username}/games/${opponent}`, {
+          const data = await fetch(`/users/${username}/games/${opponent}`, {
             headers: {
               authorization: `Bearer ${token}`
             }
