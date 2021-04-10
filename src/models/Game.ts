@@ -71,8 +71,6 @@ const schema = new Schema<Game>({
 });
 
 schema.pre('save', function (next) {
-  console.log(this.host.user);
-  console.log(this.opponent.user);
   mongoose.models.Game.findOne({
     'host.user': this.host.user,
     'opponent.user': this.opponent.user,
