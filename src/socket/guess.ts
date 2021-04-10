@@ -25,7 +25,7 @@ export async function guess(room: BroadcastOperator<any>, socket: Socket, user: 
     game.completed = true;
     await game.save();
 
-    room.emit('message', `${user.username} guessed the word!`);
+    let message = `${user.username} guessed the word!`;
 
     const data = await fetch(`https://mashape-community-urban-dictionary.p.rapidapi.com/define?term=${encodeURIComponent(word)}`, {
       headers: {
@@ -35,9 +35,18 @@ export async function guess(room: BroadcastOperator<any>, socket: Socket, user: 
     }).then((response) => response.json());
 
     if (data?.list?.length) {
-      room.emit('message', `=== ${word} definition ===\n${data.list[0].definition}`);
+      const { example, definition } = data.list[0];
+
+      if (example) {
+        message += `\n=== ${word} example ===\n${example}`;
+      }
+
+      if (definition) {
+        message += `\n=== ${word} definition ===\n${definition}`;
+      }
     }
 
+    room.emit('message', message);
     room.disconnectSockets(true);
   }
 }

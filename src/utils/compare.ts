@@ -1,15 +1,15 @@
 import { Token } from '../types';
 
 export function compare(guess: string, word: string) {
-  const [guessTokens, { getRemaining }] = tokenize(guess);
-  const [wordTokens, { isIncorrect }] = tokenize(word);
+  const tokenizedGuess = tokenize(guess);
+  const tokenizedWord = tokenize(word);
 
-  return guessTokens.map((token) => {
-    const incorrect = guessTokens.filter((t) => isIncorrect(t, token));
+  return tokenizedGuess.map((token) => {
+    const incorrect = tokenizedGuess.filter((t) => containsNeither(t, token, tokenizedWord));
 
     if (!incorrect.includes(token)) {
       return `[${token.letter}]`;
-    } else if (incorrect.indexOf(token) < getRemaining(token, wordTokens)) {
+    } else if (incorrect.indexOf(token) < remainderOf(token, tokenizedGuess, tokenizedWord)) {
       return `(${token.letter})`;
     }
 
@@ -17,17 +17,13 @@ export function compare(guess: string, word: string) {
   }).join('');
 }
 
-function tokenize(word: string) {
-  const tokens = word.split('').map<Token>((letter, index) => ({
-    letter,
-    index
-  }));
-  const actions = {
-    isIncorrect: (a: Token, b: Token) =>
-      a.letter === b.letter && !tokens.some(({ letter, index }) => letter === a.letter && index === a.index),
-    getRemaining: (token: Token, ts: Token[]) =>
-      ts.reduce((acc, t) => acc + (actions.isIncorrect(t, token) ? 1 : 0), 0)
-  };
+const tokenize = (str: string) => str.split('').map<Token>((letter, index) => ({
+  letter,
+  index
+}));
 
-  return [tokens, actions] as const;
-}
+const containsNeither = (a: Token, b: Token, tokens: Token[]) =>
+  a.letter === b.letter && !tokens.some(({ letter, index }) => letter === a.letter && index === a.index);
+
+const remainderOf = (token: Token, a: Token[], b: Token[]) =>
+  b.reduce((acc, t) => acc + (containsNeither(t, token, a) ? 1 : 0), 0);

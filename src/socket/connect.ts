@@ -49,7 +49,7 @@ export async function connect(io: Server, socket: Socket) {
     const g = await Game.findById(game.id);
 
     if (!g) {
-      return;
+      return room.disconnectSockets(true);
     }
 
     if (g.completed) {
