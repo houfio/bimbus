@@ -45,11 +45,19 @@ export async function connect(io: Server, socket: Socket) {
   room.emit('message', `${user.username} joined the game`);
 
   socket.on('disconnect', () => console.log(`${socket.user} disconnected from ${id}`));
-  socket.on('guess', (word: string) => {
-    if (io.sockets.adapter.rooms.get(id)?.size !== 2) {
-      return room.emit('message', 'Please wait for all users to connect');
+  socket.on('guess', async (word: string) => {
+    const g = await Game.findById(game.id);
+
+    if (!g) {
+      return;
     }
 
-    return guess(room, socket, user, game.id, word)
+    if (g.completed) {
+      return room.emit('message', 'The game is already over');
+    } else if (io.sockets.adapter.rooms.get(id)?.size !== 2) {
+      // return room.emit('message', 'Please wait for all users to connect');
+    }
+
+    await guess(room, socket, user, g, word)
   });
 }

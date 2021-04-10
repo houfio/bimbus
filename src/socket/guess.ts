@@ -1,4 +1,4 @@
-import { Schema } from 'mongoose';
+import fetch from 'node-fetch';
 import { BroadcastOperator, Socket } from 'socket.io';
 
 import { Game } from '../models/Game';
@@ -6,13 +6,7 @@ import { User } from '../models/User';
 import { ModelType } from '../types';
 import { compare } from '../utils/compare';
 
-export async function guess(room: BroadcastOperator<any>, socket: Socket, user: ModelType<typeof User>, id: Schema.Types.ObjectId, word: string) {
-  const game = await Game.findById(id);
-
-  if (!game) {
-    return;
-  }
-
+export async function guess(room: BroadcastOperator<any>, socket: Socket, user: ModelType<typeof User>, game: ModelType<typeof Game>, word: string) {
   if (word.length !== game.word.length) {
     return socket.emit('message', 'Guess not same length as answer');
   } else if (!game.dictionary.words.includes(word)) {
@@ -31,7 +25,19 @@ export async function guess(room: BroadcastOperator<any>, socket: Socket, user: 
     game.completed = true;
     await game.save();
 
-    room.emit('message', `${user.username} guessed the word!`)
+    room.emit('message', `${user.username} guessed the word!`);
+
+    const data = await fetch(`https://mashape-community-urban-dictionary.p.rapidapi.com/define?term=${encodeURIComponent(word)}`, {
+      headers: {
+        'x-rapidapi-key': process.env.API_KEY ?? '',
+        'x-rapidapi-host': 'mashape-community-urban-dictionary.p.rapidapi.com'
+      }
+    }).then((response) => response.json());
+
+    if (data?.list?.length) {
+      room.emit('message', `=== ${word} definition ===\n${data.list[0].definition}`);
+    }
+
     room.disconnectSockets(true);
   }
 }

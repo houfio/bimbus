@@ -73,14 +73,13 @@
           const opponent = document.getElementById('opponent').value;
 
           const data = await fetch(`http://localhost:8000/users/${username}/games/${opponent}`, {
-            method: 'GET',
-            headers: new Headers({
-              'Authorization': `Bearer ${token}`
-            })
-          }).then(response => response.json());
+            headers: {
+              authorization: `Bearer ${token}`
+            }
+          }).then((response) => response.json());
 
           if (!data.status.success) {
-            log('CLIENT', 'No active game found via API...');
+            log('CLIENT', 'No game found...');
           } else {
             log('CLIENT', 'Connecting to server...');
 
