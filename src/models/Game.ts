@@ -38,6 +38,7 @@ function player(validate: (game: Game, value: Schema.Types.ObjectId) => boolean 
     score: {
       type: Number,
       default: 0,
+      min: 0,
       required: true
     },
     guesses: {
