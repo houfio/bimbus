@@ -37,12 +37,12 @@ export async function guess(room: BroadcastOperator<any>, socket: Socket, user: 
     if (data?.list?.length) {
       const { example, definition } = data.list[0];
 
-      if (example) {
-        message += `\n=== ${word} example ===\n${example}`;
-      }
-
       if (definition) {
         message += `\n=== ${word} definition ===\n${definition}`;
+      }
+
+      if (example) {
+        message += `\n=== ${word} example ===\n${example}`;
       }
     }
 
