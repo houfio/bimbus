@@ -136,6 +136,8 @@ export const gamesRoute = route('/games', gameRoute)(
   withResponse('post', async ({ user, opponent, dictionary }) => {
     if (user.username === opponent.username) {
       throw new HttpError('Cannot create a game with yourself', 422);
+    } else if (!dictionary.words.length) {
+      throw new HttpError('Cannot create a game with an empty dictionary', 422);
     }
 
     return await Game.create({
