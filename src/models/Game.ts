@@ -1,3 +1,4 @@
+import * as mongoose from 'mongoose';
 import { Document, model, PaginateModel, Schema } from 'mongoose';
 import autopopulate from 'mongoose-autopopulate';
 import paginate from 'mongoose-paginate-v2';
@@ -61,18 +62,28 @@ const schema = new Schema<Game>({
   completed: {
     type: Boolean,
     required: true,
-    default: false,
-    index: {
-      unique: true,
-      partialFilterExpression: {
-        completed: false
-      }
-    }
+    default: false
   },
   host: player(),
   opponent: player((game, value) => game.host.user.toString() !== value.toString())
 }, {
   versionKey: false
+});
+
+schema.pre('save', function (next) {
+  console.log(this.host.user);
+  console.log(this.opponent.user);
+  mongoose.models.Game.findOne({
+    'host.user': this.host.user,
+    'opponent.user': this.opponent.user,
+    'completed': false
+  }, (err: any, data: any) => {
+    if (data) {
+      next(new Error('There is an active game'));
+    } else {
+      next();
+    }
+  })
 });
 
 schema.plugin(paginate as any);

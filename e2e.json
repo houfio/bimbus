@@ -1,0 +1,1286 @@
+{
+	"info": {
+		"_postman_id": "c521aab0-8aa9-4523-bd72-6f1910573aca",
+		"name": "Bimbus_API",
+		"description": "It is api test for bumbis",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "user_post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Create a user\", function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200)\r",
+							"\r",
+							"    pm.expect(jsonData.data.username).to.eql(pm.globals.get('username'));\r",
+							"    pm.expect(jsonData.data.email).to.eql(pm.globals.get('email'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set('username', 'TestUser');\r",
+							"pm.globals.set('password', 'TestUserPassword123!');\r",
+							"pm.globals.set('email',    'TestUser@TestUser.Test');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"{{username}}\",\r\n  \"password\": \"{{password}}\",\r\n  \"email\": \"{{email}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user_login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login user', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"    pm.expect(jsonData.data).to.have.property('token');\r",
+							"\r",
+							"    pm.globals.set('token', jsonData.data.token);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"password\": \"{{password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user_get",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Get the test user', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200)\r",
+							"\r",
+							"    pm.expect(jsonData.data.username).to.eql(pm.globals.get('username'));\r",
+							"    pm.expect(jsonData.data.email).to.eql(pm.globals.get('email'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dictionary_post",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set('dictionary', 'TestDictionary');\r",
+							"pm.globals.set('dictionaryLang', 'en');\r",
+							"pm.globals.set('dictionaryPublic', true);"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Create a dictionary', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"\r",
+							"    pm.expect(jsonData.data).to.have.property('slug');\r",
+							"    pm.expect(jsonData.data.name).to.eql(pm.globals.get('dictionary'));\r",
+							"    pm.expect(jsonData.data.language).to.eql(pm.globals.get('dictionaryLang'));\r",
+							"    pm.expect(jsonData.data.public).to.eql(pm.globals.get('dictionaryPublic'));\r",
+							"\r",
+							"    pm.globals.set('dictionarySlug', jsonData.data.slug);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"name\": \"{{dictionary}}\",\r\n  \"language\": \"{{dictionaryLang}}\",\r\n  \"public\": {{dictionaryPublic}}\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/dictionaries",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"dictionaries"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "word_post_should_succeed",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set('word_1', 'bimbus');\r",
+							"\r",
+							"pm.variables.set('word', pm.globals.get('word_1'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Add word to dictionary (Should Succeed)', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200)\r",
+							"\r",
+							"    pm.expect(jsonData.data.word).to.eql(pm.globals.get('word_1'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"word\": \"{{word}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/dictionaries/{{dictionarySlug}}/words",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"dictionaries",
+						"{{dictionarySlug}}",
+						"words"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "word_post_should_fail_length",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set('word_2', 'bimbuslonger');\r",
+							"\r",
+							"pm.variables.set('word', pm.globals.get('word_2'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Add word to dictionary (Should Fail Length)', function () {\r",
+							"    pm.response.to.have.status(500)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(false);\r",
+							"    pm.expect(jsonData.status.code).to.eql(500);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"word\": \"{{word}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/dictionaries/{{dictionarySlug}}/words",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"dictionaries",
+						"{{dictionarySlug}}",
+						"words"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "word_post_should_fail_duplicate",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set('word_3', 'bimbus');\r",
+							"\r",
+							"pm.variables.set('word', pm.globals.get('word_3'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Add word to dictionary (Should Fail Duplicate)', function () {\r",
+							"    pm.response.to.have.status(500)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(false);\r",
+							"    pm.expect(jsonData.status.code).to.eql(500);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"word\": \"{{word}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/dictionaries/{{dictionarySlug}}/words",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"dictionaries",
+						"{{dictionarySlug}}",
+						"words"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "word_post_should_succeed_2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set('word_4', 'bambus');\r",
+							"\r",
+							"pm.variables.set('word', pm.globals.get('word_4'));"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Add word to dictionary (Should Succeed)', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200)\r",
+							"\r",
+							"    pm.expect(jsonData.data.word).to.eql(pm.globals.get('word_4'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"word\": \"{{word}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/dictionaries/{{dictionarySlug}}/words",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"dictionaries",
+						"{{dictionarySlug}}",
+						"words"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "opponent_post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Create a user\", function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"\r",
+							"    pm.expect(jsonData.data.username).to.eql(pm.globals.get('opponent_username'));\r",
+							"    pm.expect(jsonData.data.email).to.eql(pm.globals.get('opponent_email'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.globals.set('opponent_username', 'OpponentUser');\r",
+							"pm.globals.set('opponent_password', 'OpponentUserPassword123!');\r",
+							"pm.globals.set('opponent_email',    'OpponentUser@OpponentUser.Test');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"username\": \"{{opponent_username}}\",\r\n  \"password\": \"{{opponent_password}}\",\r\n  \"email\": \"{{opponent_email}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "opponent_login",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Login user', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"    pm.expect(jsonData.data).to.have.property('token');\r",
+							"\r",
+							"    pm.globals.set('opponent_token', jsonData.data.token);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{opponent_username}}\",\r\n    \"password\": \"{{opponent_password}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "game_post_should_succeed",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Create a game (Should Succeed)', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"\r",
+							"    pm.expect(jsonData.data.host).to.eql(pm.globals.get('username'));\r",
+							"    pm.expect(jsonData.data.opponent).to.eql(pm.globals.get('opponent_username'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"dictionary\": \"{{dictionarySlug}}\",\r\n  \"opponent\": \"{{opponent_username}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/games",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "game_post_should_fail_duplicate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Create a game (Should Fail Duplicate)', function () {\r",
+							"    pm.response.to.have.status(500)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(false);\r",
+							"    pm.expect(jsonData.status.code).to.eql(500);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"dictionary\": \"{{dictionarySlug}}\",\r\n  \"opponent\": \"{{opponent_username}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/games",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "game_post_should_fail_with_self",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Create a game (Should Fail Creating Game With Self)', function () {\r",
+							"    pm.response.to.have.status(422)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(false);\r",
+							"    pm.expect(jsonData.status.code).to.eql(422);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"dictionary\": \"{{dictionarySlug}}\",\r\n  \"opponent\": \"{{username}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/games",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"games"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "game_get_username_first",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Get a game with host username first', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/games/{{opponent_username}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"games",
+						"{{opponent_username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "game_get_opponent_first",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Get a game with opponents username first', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{opponent_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/users/{{opponent_username}}/games/{{username}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{opponent_username}}",
+						"games",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dictionary_get_include",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Get dictionary and check if include is correct', function() {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"\r",
+							"    pm.expect(jsonData.data.slug).to.eql(pm.globals.get('dictionarySlug'));\r",
+							"    pm.expect(jsonData.data.name).to.eql(undefined);\r",
+							"    pm.expect(jsonData.data.language).to.eql(undefined);\r",
+							"    pm.expect(jsonData.data.public).to.eql(undefined);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/dictionaries/{{dictionarySlug}}?include=slug",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"dictionaries",
+						"{{dictionarySlug}}"
+					],
+					"query": [
+						{
+							"key": "include",
+							"value": "slug"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dictionary_get_include_two",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Get dictionary and check if include is correct', function() {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"\r",
+							"    pm.expect(jsonData.data.slug).to.eql(pm.globals.get('dictionarySlug'));\r",
+							"    pm.expect(jsonData.data.name).to.eql(pm.globals.get('dictionary'));\r",
+							"    pm.expect(jsonData.data.language).to.eql(undefined);\r",
+							"    pm.expect(jsonData.data.public).to.eql(undefined);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/dictionaries/{{dictionarySlug}}?include=slug&include=name",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"dictionaries",
+						"{{dictionarySlug}}"
+					],
+					"query": [
+						{
+							"key": "include",
+							"value": "slug"
+						},
+						{
+							"key": "include",
+							"value": "name"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "dictionary_delete",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Delete dictionary', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"\r",
+							"    pm.expect(jsonData.data.slug).to.eql(pm.globals.get('dictionarySlug'));\r",
+							"    pm.expect(jsonData.data.name).to.eql(pm.globals.get('dictionary'));\r",
+							"    pm.expect(jsonData.data.language).to.eql(pm.globals.get('dictionaryLang'));\r",
+							"    pm.expect(jsonData.data.public).to.eql(pm.globals.get('dictionaryPublic'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}/dictionaries/{{dictionarySlug}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}",
+						"dictionaries",
+						"{{dictionarySlug}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "user_delete",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Delete user', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"\r",
+							"    pm.expect(jsonData.data.username).to.eql(pm.globals.get('username'));\r",
+							"    pm.expect(jsonData.data.email).to.eql(pm.globals.get('email'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/users/{{username}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{username}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "opponent_delete",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('Delete user', function () {\r",
+							"    pm.response.to.have.status(200)\r",
+							"    pm.response.to.have.jsonBody()\r",
+							"\r",
+							"    var jsonData = JSON.parse(responseBody);\r",
+							"\r",
+							"    pm.expect(jsonData.status.success).to.eql(true);\r",
+							"    pm.expect(jsonData.status.code).to.eql(200);\r",
+							"\r",
+							"    pm.expect(jsonData.data.username).to.eql(pm.globals.get('opponent_username'));\r",
+							"    pm.expect(jsonData.data.email).to.eql(pm.globals.get('opponent_email'));\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{opponent_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/users/{{opponent_username}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"users",
+						"{{opponent_username}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -4,6 +4,7 @@ import { withDictionaryData } from '../../middleware/withDictionaryData';
 import { withQueryData } from '../../middleware/withQueryData';
 import { withResponse } from '../../middleware/withResponse';
 import { withUserData } from '../../middleware/withUserData';
+import { Game } from '../../models/Game';
 import { GetDictionary } from '../../structs/GetDictionary';
 import { UpdateDictionary } from '../../structs/UpdateDictionary';
 import { route } from '../../utils/route';
@@ -125,6 +126,8 @@ export const dictionaryRoute = route('/:slug', wordsRoute)(
   withDictionaryData((ctx) => [ctx.query.slug, ctx.user]),
   withResponse('get', ({ dictionary }) => dictionary),
   withResponse('delete', async ({ dictionary }) => {
+    await Game.deleteMany({ 'dictionary': dictionary._id });
+
     await dictionary.delete();
 
     return dictionary;
